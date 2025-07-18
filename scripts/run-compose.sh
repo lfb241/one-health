@@ -51,13 +51,13 @@ echo "run-compose.sh: Starting script"
 echo "====================================================================="
 
 echo "run-compose.sh: Removing all the containers"
-docker compose rm -s -f
+docker-compose rm -s -f
 
 echo "run-compose.sh: Building the server and client images"
-docker compose build $VAR
+docker-compose build $VAR
 
 echo "run-compose.sh: Runing the containers"
-docker compose up
+docker-compose up
 
 echo "====================================================================="
 echo "run-compose.sh: Finishing script"
