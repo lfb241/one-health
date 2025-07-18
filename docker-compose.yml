@@ -33,7 +33,7 @@ services:
     image: neo4j
     ports:
       - "7474:7474"
-      - "7687:7687" # ?Wieso benutzen wir diesen Port?
+      - "7687:7687" # for BOLT-Protocol
     networks:
       - one-health-network
     volumes:

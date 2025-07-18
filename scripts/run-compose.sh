@@ -1,4 +1,5 @@
 VAR=""
+ENV_VAR=".env.development"
 
 run_update() {
     echo "====================================================================="
@@ -38,6 +39,10 @@ while [ $# -gt 0 ]; do
         -nc | --no-cache)
             VAR="--no-cache"
             ;;
+        
+        -p | --production)
+            ENV_VAR=".env.production"
+            ;;
         *)
             echo "Invalid option $1" >&2
             return 1 
@@ -54,7 +59,7 @@ echo "run-compose.sh: Removing all the containers"
 docker-compose rm -s -f
 
 echo "run-compose.sh: Building the server and client images"
-docker-compose build $VAR
+docker-compose build --build-arg ENV=$ENV_VAR
 
 echo "run-compose.sh: Runing the containers"
 docker-compose up

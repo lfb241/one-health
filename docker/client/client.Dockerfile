@@ -1,3 +1,5 @@
+ARG ENV
+
 # Use a base image with Node.js pre-installed
 FROM node:18-alpine AS build
 
@@ -13,7 +15,7 @@ RUN npm install
 # Copy the rest of the application code
 COPY client/ .
 
-COPY config/.env.production ./.env.production
+COPY config/$ENV ./$ENV
 
 # Build the React app
 RUN npm run build
