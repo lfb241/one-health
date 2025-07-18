@@ -5,15 +5,15 @@ FROM maven:3.8.3-openjdk-17-slim AS build
 WORKDIR /app
 
 # Copy the pom.xml file to the working directory
-COPY ../../server/pom.xml .
+COPY server/pom.xml .
 
 # Download the dependencies specified in pom.xml
 RUN mvn dependency:go-offline -B
 
 # Copy the source code to the working directory
-COPY ../../server/src ./src
+COPY server/src ./src
 
-COPY ../../config/application-prod.properties ./src/main/resources/application-prod.properties
+COPY config/application-prod.properties ./src/main/resources/application-prod.properties
 
 # Build the application
 RUN mvn package -Dmaven.test.skip

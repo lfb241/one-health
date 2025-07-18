@@ -5,15 +5,15 @@ FROM node:18-alpine AS build
 WORKDIR /app
 
 # Copy package.json and package-lock.json (if exists)
-COPY ../../client/package*.json ./
+COPY client/package*.json ./
 
 # Install npm dependencies
 RUN npm install
 
 # Copy the rest of the application code
-COPY ../../client/ .
+COPY client/ .
 
-COPY ../../config/.env.production ./.env.production
+COPY config/.env.production ./.env.production
 
 # Build the React app
 RUN npm run build
@@ -27,7 +27,7 @@ FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy custom nginx configuration
-COPY ../../config/nginx.conf /etc/nginx/nginx.conf
+COPY config/nginx.conf /etc/nginx/nginx.conf
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
