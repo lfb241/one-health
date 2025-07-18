@@ -23,7 +23,7 @@ services:
     volumes:
       -  one_health_postgredb_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: one_healt_huser
+      POSTGRES_USER: one_health_user
       POSTGRES_PASSWORD: one_health_password
       POSTGRES_DB: one_health
 

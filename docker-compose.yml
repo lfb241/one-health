@@ -1,0 +1,70 @@
+version: '3'
+
+services:
+  server:
+    container_name: one-health-server
+    build:
+      context: . 
+      dockerfile: ./docker/server/server.Dockerfile
+    ports:
+      - "8080:8080"
+    networks:
+      - one-health-network
+    depends_on:
+      postgredb:
+          condition: service_healthy  # ensures the correct start of postgredb
+      graphdb:
+          condition: service_started
+      
+  client:
+    container_name: one-health-client
+    build:
+      context: .
+      dockerfile: ./docker/client/client.Dockerfile
+    ports:
+      - "3000:80"
+    networks:
+      - one-health-network
+    depends_on:
+      - server
+
+  graphdb:
+    container_name: one-health-graphdb
+    image: neo4j
+    ports:
+      - "7474:7474"
+      - "7687:7687" # ?Wieso benutzen wir diesen Port?
+    networks:
+      - one-health-network
+    volumes:
+      - /data/neo4j_data:/data # ???
+    environment:
+      NEO4J_AUTH: none
+      NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+
+  postgredb:
+    container_name: one-health-postgredb
+    build:
+      context: .
+      dockerfile: ./docker/rdkit/rdkit.Dockerfile
+   # image: rdkit-postgre ???
+    ports:
+      - "5433:5432"
+    networks:
+      - one-health-network
+    volumes:
+      -  /data/postgres_data:/var/lib/postgresql/data # ???
+    environment:
+      POSTGRES_USER: one_health_user
+      POSTGRES_PASSWORD: one_health_password
+      POSTGRES_DB: one_health
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U one_health_user -d one_health"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
+
+networks:
+  one-health-network:
+    driver: bridge

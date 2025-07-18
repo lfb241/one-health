@@ -17,6 +17,6 @@ jobs:
       with:
         node-version: 18.18.0
     - name: Install Node.js dependencies
-      run: cd ontology-manager-client && npm install
+      run: cd client && npm install
     - name: Audit Node.js dependencies
-      run: cd ontology-manager-client && npm audit --omit=dev
+      run: cd client && npm audit --omit=dev

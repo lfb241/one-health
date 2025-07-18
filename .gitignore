@@ -1,15 +1,15 @@
 # See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
 
 # dependencies
-/ontology-manager-client/node_modules
-ontology-manager-client/.pnp
+/client/node_modules
+client/.pnp
 .pnp.js
 
 # testing
-ontology-manager-client/coverage
+client/coverage
 
 # production
-ontology-manager-client/build
+client/build
 
 # misc
 .DS_Store
@@ -24,9 +24,9 @@ yarn-error.log*
 
 
 HELP.md
-ontology-manager-server/target/
+server/target/
 
-ontology-manager-server/.mvn/wrapper/maven-wrapper.jar
+server/.mvn/wrapper/maven-wrapper.jar
 
 !**/src/main/**/target/
 !**/src/test/**/target/
