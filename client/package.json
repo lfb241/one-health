@@ -37,12 +37,12 @@
         "rxjs": "^7.8.1",
         "sass": "^1.70.0",
         "smiles-drawer": "2.0.3",
+        "web-vitals": "^5.1.0",
         "xlsx": "https://cdn.sheetjs.com/xlsx-0.20.2/xlsx-0.20.2.tgz"
     },
     "scripts": {
-        "start": "vite",
-        "build": "vite build",
-        "serve": "vite preview",
+        "start": "vite --mode development",
+        "build": "vite build --mode production",
         "lint": "eslint 'src/**/*.{ts,tsx,js,jsx}' --fix",
         "test": "vitest",
         "preview": "vite preview"

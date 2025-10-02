@@ -163,17 +163,17 @@ For graph visualization we selected [Cytoscape](https://js.cytoscape.org/) and i
 
 For this applications we setted up two environments: `DEV` (Development) and `PROD` (Production). The configurations for these environments must be defined for both the server and client of the application and usually will be related to the networking of the application.
 
-The **client environment** configuration is managed using the `.env*` files located in the root directory of the client (i.e. `ontology-manager-client/.env`), in this case we have three files: `.env` for general configurations for both environments, `.env.development` and `.env.production` for specific configurations for development and production respectively.  In the environment specific files we defined two variables `REACT_APP_API_URL=<server-url>` and `REACT_APP_ENV=<environment-name>`, then these variables can be accessed using the `process.env` object in JavaScript.
+The **client environment** configuration is managed using the `.env*` files located in the root directory of the client (i.e. `client/.env`), in this case we have three files: `.env` for general configurations for both environments, `.env.development` and `.env.production` for specific configurations for development and production respectively.  In the environment specific files we defined two variables `VITE_API_URL=<server-url>` and `VITE_ENV=<environment-name>`, then these variables can be accessed using the `meta.env` object in JavaScript.
 
-For example `REACT_APP_API_URL` is used to configure the base URL for the HTTP client (Axios in this case) which is done in the `index.tsx` file
+For example `VITE_API_URL` is used to configure the base URL for the HTTP client (Axios in this case) which is done in the `index.tsx` file
 
 ```typescript
-axios.defaults.baseURL = process.env.REACT_APP_API_URL;
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 ```
 
 By default running `npm start` will run a development server using values defined in the `.env.development` file while `npm build` will create a production build of the application using the values in `.env.production`. For more information about handling environment variables in Node.js please refer to the [documentation](https://create-react-app.dev/docs/adding-custom-environment-variables/).
 
-The **server environment** configuration is managed using the `application-<env>.configuration` files located in `ontology-manager-server/src/main/resources/`, in this case we have three files: `application.configuration` which is the default configuration used by the Spring framework, `application-dev.configuration` and `application-prod.configuration` for specific configurations for development and production respectively. The `application.configuration` file is used as a proxy to select the active environment, in this case we setted `spring.profiles.active=dev` since we are in development most of the time, also the active profile can be selected when executing the `jar` file using arguments like we do when running the production build.
+The **server environment** configuration is managed using the `application-<env>.configuration` files located in `server/src/main/resources/`, in this case we have three files: `application.configuration` which is the default configuration used by the Spring framework, `application-dev.configuration` and `application-prod.configuration` for specific configurations for development and production respectively. The `application.configuration` file is used as a proxy to select the active environment, in this case we setted `spring.profiles.active=dev` since we are in development most of the time, also the active profile can be selected when executing the `jar` file using arguments like we do when running the production build.
 
 ```bash  
 java -jar -Dspring.profiles.active=prod app.jar
@@ -193,9 +193,9 @@ docker run --name one-health-graphdb -p 7474:7474 -p 7687:7687 -e NEO4J_AUTH=non
 
 After executing this command you should be able to access the Neo4J Manager through `localhost:7474` and the server to communicate with the app using `localhost:7687`.
 
-To run the server we used [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/), just open the project folder (`ontology-manager-server`) and run the main file  `/src/main/java/ipbhalle.de.ontologymanagerserver/OntologyManagerServerApplication.java`. This should launch the server on `localhost:8080`.
+To run the server we used [IntelliJ IDEA Community Edition](https://www.jetbrains.com/idea/), just open the project folder (`server`) and run the main file  `/src/main/java/ipbhalle.de.ontologymanagerserver/OntologyManagerServerApplication.java`. This should launch the server on `localhost:8080`.
 
-To run the client we used Visual Studio Code, after opening the client project directory on VS Code open a terminal and use the following commands to launch the client on `localhost:3000`
+To run the client we used Visual Studio Code, after opening the client project directory on VS Code open a terminal and use the following commands to launch the client on `localhost:5173`
 
 ```bash
 npm install
@@ -206,23 +206,23 @@ Please notice that if any of the port is being used by another process the deplo
 
 ## Production Deployment
 
-The production build of the application is deployed using Docker, we provide three files:
+The production build of the application is deployed using Docker, we provide three files located in `docker/`:
 
 `server.dockerfile` provides a containerized version of the production build of the server
 
 `client.dockerfile` provides a containerized version of the production build of the client served by an HTTP server
 
-`compose.yaml` 
+`rdkit.dockerfile` provides a containerized version of the postgres database
 
-Also we provide three files to automate the deployment process: pulling the newest version from GitHub, stoping and removing the containers, rebuilding the docker images and starting new containers.
+The deployment procress is managed by `docker-compose.yml` located in the root directory.
 
-`run-docker.sh` automates this process without using the `compose` tool and `run-compose.sh` uses this tool.
+`run-compose.sh` located in `scripts/` automates this process using this tool.
 
 To execute this file run the following commands
 
 ```bash
-chmod +x run-<tool>.sh
-./run-<tool>.sh
+chmod +x scripts/run-compose.sh
+./scripts/run-compose.sh
 ```
 
 

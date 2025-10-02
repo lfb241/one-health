@@ -13,8 +13,6 @@ RUN mvn dependency:go-offline -B
 # Copy the source code to the working directory
 COPY server/src ./src
 
-COPY config/application-prod.properties ./src/main/resources/application-prod.properties
-
 # Build the application
 RUN mvn package -Dmaven.test.skip
 

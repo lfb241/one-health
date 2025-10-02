@@ -40,10 +40,7 @@ while [ $# -gt 0 ]; do
             VAR="--no-cache"
             ;;
         
-        -p | --production)
-            ENV_VAR=".env.production"
-            ;;
-        *)
+*)
             echo "Invalid option $1" >&2
             return 1 
             ;;
@@ -59,9 +56,9 @@ echo "run-compose.sh: Removing all the containers"
 docker-compose rm -s -f
 
 echo "run-compose.sh: Building the server and client images"
-docker-compose build --build-arg ENV=$ENV_VAR
+docker-compose build $VAR
 
-echo "run-compose.sh: Runing the containers"
+echo "run-compose.sh: Running the containers"
 docker-compose up
 
 echo "====================================================================="

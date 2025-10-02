@@ -1,5 +1,3 @@
-ARG ENV
-
 # Use a base image with Node.js pre-installed
 FROM node:18-alpine AS build
 
@@ -15,8 +13,6 @@ RUN npm install
 # Copy the rest of the application code
 COPY client/ .
 
-COPY config/$ENV ./$ENV
-
 # Build the React app
 RUN npm run build
 
@@ -29,7 +25,7 @@ FROM nginx:alpine
 COPY --from=build /app/build /usr/share/nginx/html
 
 # Copy custom nginx configuration
-COPY config/nginx.conf /etc/nginx/nginx.conf
+COPY client/nginx.conf /etc/nginx/nginx.conf
 
 # Start Nginx server
 CMD ["nginx", "-g", "daemon off;"]
