@@ -40,7 +40,7 @@ while [ $# -gt 0 ]; do
             VAR="--no-cache"
             ;;
         
-*)
+        *)
             echo "Invalid option $1" >&2
             return 1 
             ;;
