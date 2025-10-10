@@ -23,7 +23,7 @@ The database connection pool is protected by:
    - For the special case of the method `JdbcTemplate.queryForStream` which does not close the connection automatically since it has a lazy behaviour it becomes necessary to call this method within a `try` block which disposes the `Stream` object and therefore closes the connection after finishing consuming the data stream or an exception has been raised. An example of how to use this method is provided below.
 
      ```java
-     //ontology-manager-sever/src/main/java/ipbhalle/de/ontologymanagerserver/postgre/repositories/PSQLNaturalProductRepository.java
+     //sever/src/main/java/ipbhalle/de/server/postgre/repositories/PSQLNaturalProductRepository.java
      
        private NaturalProductDTO QueryForCompound(String query, @Nullable Object... args) {
            try (var result =  template.queryForStream(query, new PSQLNaturalProductRowMapper(), args)){
@@ -50,7 +50,7 @@ The database connection pool is protected by:
 2. Configuring limits for connection lifetime, timeout and leak detection for the Hikari connection pool using the production configuration file.
 
    ```properties
-   #ontology-manager-server/src/main/resources/application-prod.properties
+   #server/src/main/resources/application-prod.properties
    spring.datasource.hikari.maximum-pool-size=20
    spring.datasource.hikari.minimum-idle=10
    spring.datasource.hikari.idle-timeout=30000
