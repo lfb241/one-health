@@ -23,6 +23,8 @@ else
     exit 1
 fi
 
+cd "$ONE_HEALTH_REPO"
+
 case $1 in
     start)
         docker compose -f docker-compose.yml -f "$ONE_HEALTH_DATA/compose.override.yaml" up -d
