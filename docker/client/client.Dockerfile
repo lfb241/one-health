@@ -17,15 +17,9 @@ COPY client/ .
 RUN npm run build
 
 
-# Use Nginx as the base image for serving the production build
-FROM nginx:alpine
+# Use Apache httpd for serving the production build
+FROM httpd
 
 
 # Copy the production build files from the build stage to the nginx web root directory
-COPY --from=build /app/build /usr/share/nginx/html
-
-# Copy custom nginx configuration
-COPY client/nginx.conf /etc/nginx/nginx.conf
-
-# Start Nginx server
-CMD ["nginx", "-g", "daemon off;"]
+COPY --from=build /app/build /usr/local/apache2/htdocs
