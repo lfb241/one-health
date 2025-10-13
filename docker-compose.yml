@@ -30,7 +30,7 @@ services:
       postgredb:
           condition: service_healthy  # ensures the correct start of postgredb
       graphdb:
-          condition: service_started
+          condition: service_healthy
 
   client:
     container_name: one-health-client
@@ -61,6 +61,12 @@ services:
     environment:
       NEO4J_AUTH: none
       NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
+    healthcheck:
+      test: ["CMD", "curl", "--fail", "http://localhost:7474", "||", "exit 1"]
+      interval: 30s
+      timeout: 30s
+      retries: 5
+      start_period: 30s
 
   postgredb:
     container_name: one-health-postgredb
