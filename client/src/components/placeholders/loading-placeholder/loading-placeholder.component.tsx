@@ -1,4 +1,5 @@
 import { ProgressSpinner } from 'primereact/progressspinner';
+import React from 'react';
 
 const LoadingPlaceholderComponent: React.FC = () => {
     // const dataTypesToIcons = DataTypes.ICONS_MAPPING();
