@@ -28,9 +28,9 @@ services:
       - one-health-network
     depends_on:
       postgredb:
-          condition: service_healthy  # ensures the correct start of postgredb
+        condition: service_healthy  # ensures the correct start of postgredb
       graphdb:
-          condition: service_started
+         condition: service_started
 
   client:
     container_name: one-health-client
@@ -42,8 +42,9 @@ services:
     hostname: www.example.com
     networks:
       - one-health-network
-    volumes:
-      - /srv/www/conf:/usr/local/apache2/conf
+     # use for production config
+     # volumes:
+     # - /srv/www/conf:/usr/local/apache2/conf
     depends_on:
       - server
 
