@@ -6,6 +6,7 @@ env:
   REGISTRY: ghcr.io
   IMAGE_NAME: ${{ github.repository }}/rdkit
   RDKIT_VERSION: Release_2024_03_1
+  POSTGRES_VERSION: 15
 
 permissions:
   contents: read
@@ -46,13 +47,12 @@ jobs:
             org.opencontainers.image.source=https://www.rdkit.org/
             org.opencontainers.image.title=one-health-rdkit
             org.opencontainers.image.description=Postgres using RdKit for One Health
-            org.opencontainers.image.version=${{ env.RDKIT_VERSION }}
+            org.opencontainers.image.version="RDKit: ${{ env.RDKIT_VERSION }}, Postgres: ${{ env.POSTGRES_VERSION }}"
     
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           file: ./docker/rdkit/rdkit.Dockerfile
-          target: final
           push: true
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}

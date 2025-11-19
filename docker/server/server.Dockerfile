@@ -17,7 +17,7 @@ COPY server/src ./src
 RUN mvn package -Dmaven.test.skip
 
 # Create a new image for running the application
-FROM eclipse-temurin:17-jdk-jammy AS final
+FROM eclipse-temurin:17-jdk-jammy
 
 # Set the working directory
 WORKDIR /app
