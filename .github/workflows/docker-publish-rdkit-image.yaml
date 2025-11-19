@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   REGISTRY: ghcr.io
-  IMAGE-NAME: ${{ github.repository }}/rdkit
+  IMAGE_NAME: ${{ github.repository }}/rdkit
   RDKIT_VERSION: Release_2024_03_1
 
 permissions:

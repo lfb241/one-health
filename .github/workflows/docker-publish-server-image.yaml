@@ -4,7 +4,7 @@ on: workflow_dispatch
 
 env:
   REGISTRY: ghcr.io
-  IMAGE-NAME: ${{ github.repository }}/server
+  IMAGE_NAME: ${{ github.repository }}/server
   SERVER_VERSION: 1.0.0
 
 permissions:
