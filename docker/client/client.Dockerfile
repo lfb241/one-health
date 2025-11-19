@@ -18,7 +18,7 @@ RUN npm run build
 
 
 # Use Apache httpd for serving the production build
-FROM httpd
+FROM httpd:2.4
 
 
 # Copy the production build files from the build stage to the nginx web root directory
