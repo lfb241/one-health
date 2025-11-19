@@ -87,7 +87,7 @@ RUN initdb -D /opt/RDKit-build/pgdata \
 
 # Stage 2: Final Image
 ARG postgres_image_version=15
-FROM docker.io/postgres:${postgres_image_version}
+FROM docker.io/postgres:${postgres_image_version} AS final
 ARG postgres_version=15
 ARG boost_version=1.74.0
 

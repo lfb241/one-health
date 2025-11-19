@@ -17,6 +17,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+
       - name: Check out repository
         uses: actions/checkout@v5
   
@@ -46,20 +47,11 @@ jobs:
             org.opencontainers.image.title=one-health-rdkit
             org.opencontainers.image.description=Postgres using RdKit for One Health
             org.opencontainers.image.version=${{ env.RDKIT_VERSION }}
-  
-      - name: Build and test Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: ./docker/rdkit/
-          target: test
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-  
+    
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: ./docker/rdkit/
+          file: ./docker/rdkit/rdkit.Dockerfile
           target: final
           push: true
           tags: ${{ steps.meta.outputs.tags }}

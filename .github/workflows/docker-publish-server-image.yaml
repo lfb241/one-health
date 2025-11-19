@@ -48,22 +48,12 @@ jobs:
             org.opencontainers.image.description=Server for One Health
             org.opencontainers.image.licenses=Apache-2.0
             org.opencontainers.image.version=${{ env.SERVER_VERSION }}
-  
-      - name: Build and test Docker image
-        uses: docker/build-push-action@v6
-        with:
-          context: .
-          dockerfile: ./docker/server/server.Dockerfile 
-          target: test
-          push: false
-          cache-from: type=gha
-          cache-to: type=gha,mode=max
-  
+    
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
           context: .
-          dockerfile: ./docker/server/server.Dockerfile
+          file: ./docker/server/server.Dockerfile 
           target: final
           push: true
           tags: ${{ steps.meta.outputs.tags }}

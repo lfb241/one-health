@@ -17,7 +17,7 @@ COPY server/src ./src
 RUN mvn package -Dmaven.test.skip
 
 # Create a new image for running the application
-FROM openjdk:17
+FROM openjdk:17 AS final
 
 # Set the working directory
 WORKDIR /app
