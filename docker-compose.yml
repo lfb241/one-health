@@ -95,6 +95,4 @@ services:
 
 networks:
   one-health-frontend:
-    driver: bridge
   one-health-backend:
-    driver: bridge
