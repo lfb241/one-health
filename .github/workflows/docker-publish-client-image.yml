@@ -52,7 +52,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          dockerfile: ./docker/client/client.Dockerfile 
+  #        dockerfile: ./docker/client/client.Dockerfile 
           target: test
           push: false
           cache-from: type=gha
@@ -62,7 +62,7 @@ jobs:
         uses: docker/build-push-action@v6
         with:
           context: .
-          dockerfile: ./docker/client/client.Dockerfile
+  #        dockerfile: ./docker/client/client.Dockerfile
           target: final
           push: true
           tags: ${{ steps.meta.outputs.tags }}
