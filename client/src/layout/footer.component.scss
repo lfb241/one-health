@@ -1,13 +1,21 @@
 @use '../Constants.scss' as c;
 
 
-.app-footer {
-    border: solid 1px c.$app-border-color;
+.app-footer{
     background-color: white;
-    position: fixed;
     bottom: 0;
     z-index: 1000;
     width: 100%;
     padding: 10px;
+    padding-bottom: 0px;
     margin: 0;
+}
+
+.app-footer-coloured-dark{
+    background-color: c.$app-color-3;
+}
+
+.app-footer-coloured-light{
+        background-color: c.$app-color-4;
+
 }

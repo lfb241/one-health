@@ -9,7 +9,13 @@ import './footer.component.scss';
 
 const Footer: React.FC = () => {
     return (
-        <div className="row app-footer">
+        <div className="app-footer">
+
+            <div className='app-footer-coloured-light row'>
+                Test
+            </div>
+
+            <div className='app-footer-coloured-dark row' style={{padding:'0px'}}>
             <div className="col-7">
                 <div className="row">
                     <div className="col-2">
@@ -18,13 +24,6 @@ const Footer: React.FC = () => {
                             src={logoIpb}
                             height="60"
                             style={{ marginRight: '3px' }}></img>
-                    </div>
-                    <div
-                        className="col-10"
-                        style={{ display: 'flex', alignItems: 'center' }}>
-                        <p style={{fontSize: '20px', color: '#a40', paddingTop: '16px'}}>
-                            This service is <strong>work in progress</strong>, layout and function are subject to change.
-                        </p>
                     </div>
                 </div>
             </div>
@@ -57,6 +56,7 @@ const Footer: React.FC = () => {
                     height="60"
                     style={{ marginRight: '3px' }}></img>
             </div>
+        </div>
         </div>
     );
 };
