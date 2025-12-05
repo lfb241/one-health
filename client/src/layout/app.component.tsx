@@ -73,7 +73,6 @@ function App() {
                         element={<DocumentationPageComponent />}
                     />
                     <Route path="legal" element={<LegalPageComponent />} />
-                    {/* <Route path="test" element={<TestPageComponent/>}/> */}
                 </Route>
             </Routes>
         </div>
