@@ -3,7 +3,12 @@ import { PageTitle } from '../../components';
 import { toolDisclaimer } from '../../utils';
 
 import React from 'react';
-const LegalPageComponent: React.FC = () => {
+
+interface LegalPageProps{
+    activeIndex: number
+}
+
+const LegalPageComponent: React.FC<LegalPageProps> = ({activeIndex}) => {
     return (
         <div className="page-container-narrow">
             <PageTitle
@@ -11,7 +16,7 @@ const LegalPageComponent: React.FC = () => {
                 title="Legal Information"
                 help={false}></PageTitle>
 
-            <Accordion multiple activeIndex={[]}>
+            <Accordion multiple activeIndex={activeIndex}>
                 <AccordionTab header="Imprint">
                     <p>
                         The Natural-One-Health service (n1h.org,

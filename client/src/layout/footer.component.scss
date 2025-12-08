@@ -1,7 +1,7 @@
 @use '../Constants.scss' as c;
 
 
-.app-footer{
+.app-footer {
     background-color: white;
     bottom: 0;
     z-index: 1000;
@@ -11,11 +11,34 @@
     margin: 0;
 }
 
-.app-footer-coloured-dark{
+.app-footer-coloured-dark {
     background-color: c.$app-color-3;
+    display:flex;
+    align-items: center;
 }
 
-.app-footer-coloured-light{
-        background-color: c.$app-color-4;
+.app-footer-coloured-light {
+    background-color: c.$app-color-4;
 
-}
+ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    overflow: hidden;
+
+    li {
+        float: left;
+
+        a {
+            display: block;
+            color: black;
+            text-align: center;
+            padding: 16px;
+            text-decoration: none;
+
+            &:hover {
+                background-color: c.$app-color-6;
+            }
+        }
+    }
+}}

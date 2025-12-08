@@ -72,7 +72,20 @@ function App() {
                         path="documentation"
                         element={<DocumentationPageComponent />}
                     />
-                    <Route path="legal" element={<LegalPageComponent />} />
+                    <Route 
+                        path="imprint" 
+                        element={<LegalPageComponent activeIndex={0} />} 
+                    />
+                    <Route 
+                        path="privacy" 
+                        element={<LegalPageComponent activeIndex={1} />} 
+                    />
+                    <Route 
+                        path="accessibility" 
+                        element={<LegalPageComponent activeIndex={2} />} 
+                    />
+
+                    
                 </Route>
             </Routes>
         </div>
