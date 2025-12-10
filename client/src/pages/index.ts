@@ -5,8 +5,6 @@ export { default as LinkTypeFormPageComponent } from './metadata/link-type-form/
 export { default as MetadataOverviewPageComponent } from './metadata/metadata-overview/ontology-overview.component';
 export { default as DataLoadPageComponent } from './metadata/data-load/data-load-page.component';
 
-export { default as CompoundSearchPageComponent } from './search/compound-search/compound-search-page.component';
-
 export { default as NeighborhoodExplorerPageComponent } from './visualization/neighborhood-explorer/neighborhood-explorer-page.component';
 export { default as CoOcurrencesSummaryPageComponent } from './visualization/co-ocurrences-summary/co-ocurrence-summary-page.component';
 

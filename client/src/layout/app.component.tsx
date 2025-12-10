@@ -5,7 +5,6 @@ import './app.component.scss';
 import Layout from './layout.component';
 import {
     CoOcurrencesSummaryPageComponent,
-    CompoundSearchPageComponent,
     DataLoadPageComponent,
     DocumentationPageComponent,
     EntityTypeFormPageComponent,
@@ -15,8 +14,8 @@ import {
     MetadataOverviewPageComponent,
     NeighborhoodExplorerPageComponent,
 } from '../pages';
-import GeneralSearchPageComponent from '../pages/search/general-search/general-search-page.component';
-import TestPageComponent from '../pages/test/test-page.component';
+import GeneralSearchPageComponent from '../components/search/general-search/general-search.component';
+import CompoundSearchPageComponent from '../components/search/compound-search/compound-search-page.component';
 
 function App() {
     return (

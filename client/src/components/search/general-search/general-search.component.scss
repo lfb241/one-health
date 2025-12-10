@@ -1,0 +1,33 @@
+@import '../../../Constants.scss';
+
+
+.general-search-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.general-search-header-input {
+    width: 50%;
+    border: 1px solid $app-border-color;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.general-search-table {
+    border: 1px solid $app-border-color;
+    border-radius: 4px;
+    max-height: 650px;
+    overflow: auto; 
+    position: relative;
+}
+
+.visualize-button {
+    position: absolute;
+    bottom: 5px;
+    right: 5px; 
+    z-index: 10;
+    width: auto
+}
