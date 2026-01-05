@@ -21,9 +21,9 @@ services:
     build:
       context: .
       dockerfile: ./docker/server/server.Dockerfile
-    # expose for debuging purposes only
-    # ports:
-    #   - "8080:8080"
+    # TODO: expose for debuging purposes only 
+    ports:
+       - "8080:8080"
     networks:
       - one-health-frontend
       - one-health-backend

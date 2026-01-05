@@ -132,7 +132,7 @@ const HomePageComponent: React.FC = () => {
     return (
         <div className="page-container-narrow" id="home-page">
             
-            <div className='row'>
+            <div>
                 <h2 style={{ textAlign: 'center' }}>
                     Empowering the research on plant-derived natural
                     products for the treatment of diseases
@@ -195,7 +195,8 @@ const HomePageComponent: React.FC = () => {
                     <br></br>
                     <small>
                         For further information, please visit the
-                        GLACIER consortium’s official website{' '}
+                        GLACIER consortium’s official website:
+                        <br></br>
                         <a href="https://glacieronehealth.org/about/">
                             About | GLACIER One Health Project
                         </a>

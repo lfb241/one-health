@@ -55,7 +55,8 @@ export const GeneralSearchPanel: React.FC = () => {
         STORES.ITutorialStore,
     );
 
-    const [history, setHistory] = useState<Partial<ISavedGeneralSearch>[]>([]);
+    const [history, setHistory] = useState<Partial<ISavedGeneralSearch>[]>([])
+
     const { messageService } = useContext(MessageServiceContext);
     const [searching, setSearching] = useState<boolean | null>(null);
 
@@ -79,66 +80,6 @@ export const GeneralSearchPanel: React.FC = () => {
 
     const initWidgets = async () => {
         setHistory(await historyService.getAllAsOptions(messageService!));
-    };
-
-    const listTemplate = (
-        items: ISavedGeneralSearch[],
-    ): ReactNode[] | undefined => {
-        if (!items || items.length === 0) return undefined;
-
-        let list = items.map((query, index) => {
-            return (
-                <div
-                    style={{
-                        padding: 5,
-                        backgroundColor: '#F8F9FA',
-                        marginBottom: 5,
-                        borderRadius: 10,
-                        border: '1px solid #DEE2E6',
-                        display: 'flex',
-                        alignItems: 'center',
-                    }}>
-                    <span style={{ marginLeft: 5 }}>{query.query}</span>
-
-                    <div style={{ marginLeft: 'auto' }}></div>
-                    <Button
-                        icon="pi pi-upload"
-                        rounded
-                        text
-                        aria-label="Filter"
-                        onClick={async (e) => {
-                            const loaded = await historyService.get(
-                                query.id,
-                                messageService!,
-                            );
-                            setElements(loaded.results);
-                        }}
-                        tooltip="Load results"
-                        tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
-                    />
-
-                    <Button
-                        icon="pi pi-trash"
-                        rounded
-                        text
-                        severity="danger"
-                        aria-label="Cancel"
-                        onClick={async (e) => {
-                            await historyService.delete(query.id);
-                            setHistory(
-                                await historyService.getAllAsOptions(
-                                    messageService!,
-                                ),
-                            );
-                        }}
-                        tooltip="Remove from history"
-                        tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
-                    />
-                </div>
-            );
-        });
-
-        return [<div className="grid grid-nogutter">{list}</div>];
     };
 
     const runQuery = async () => {
@@ -177,6 +118,49 @@ export const GeneralSearchPanel: React.FC = () => {
         return <span>{truncateString(result.name, 150)}</span>;
     };
 
+    const tokenList = (
+        items: Partial<ISavedGeneralSearch>[],
+    ) => {
+        if (!items || items.length === 0) return undefined
+        return (
+
+            <div className='token-list'>
+                {items.slice(0, 5).map((query, index) => (
+                    <div className="token"
+                        onClick={(e) => {
+                            setQuery(query.query);
+                        }}
+                    >
+                        <span className="mb-0">{query.query}</span>
+                        <Button
+                            className='token-button'
+                            text
+                            rounded
+                            size='small'
+                            icon="pi pi-times"
+                            onClick={async (e) => {
+                                e.stopPropagation();
+                                if (query.id != undefined)
+                                    await historyService.delete(query.id);
+
+                                setHistory(
+                                    await historyService.getAllAsOptions(
+                                        messageService!,
+                                    ),
+                                );
+                            }}
+                            pt={{ icon: { style: { color: 'black' } } }}
+                            tooltip="Remove from history"
+                            tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
+                        />
+                    </div>
+                ))}
+            </div>
+
+        )
+
+    }
+    
     return (
 
         <div className='general-search-panel' id='general-search-panel'>
@@ -191,6 +175,9 @@ export const GeneralSearchPanel: React.FC = () => {
                 id="general-search-header">
 
                 <div className="p-inputgroup general-search-header-input">
+
+                    {tokenList(history)}
+
                     <InputText
                         style={{
                             border: 'none',        // Input selbst keine Border
@@ -297,75 +284,6 @@ export const GeneralSearchPanel: React.FC = () => {
                 )}
 
             </div>
-
-
-
-            {/* TODO: This is the history Component
-            Implementation of history as "tags" in the search bar
-            <div
-                    className="col-3 one-health-panel"
-                    style={{ height: '700px' }}
-                    id="general-search-history">
-                    <div className="one-health-panel-header">
-                        <i
-                            style={{ marginLeft: 5, marginRight: 5 }}
-                            className="fa fa-history"></i>
-                        History
-                    </div>
-
-                    <div
-                        style={{
-                            height: 'calc(100% - 50px)',
-                            padding: 5,
-                            overflowY: 'scroll',
-                        }}>
-                        {history.length > 0 && (
-                            <DataView
-                                value={history}
-                                listTemplate={listTemplate}
-                            />
-                        )}
-                        {history.length <= 0 && (
-                            <CollectionPlaceholderComponent
-                                icon="pi pi-history"
-                                message=""
-                            />
-                        )}
-                    </div>
-                </div> */}
-
-            {/* style={{ height: '700px', paddingLeft: '10px' }} */}
-
-
-
-
-            {/* <Button
-                                    icon="fa fa-compass"
-                                    style={{ marginLeft: 5 }}
-                                    onClick={() => {
-                                        neighborhoodExplorerStore.nodes =
-                                            neighborhoodExplorerStore.nodes.concat(
-                                                selectedElements.map((x) => {
-                                                    return {
-                                                        data: {
-                                                            id: x.id,
-                                                            color: x.color,
-                                                            label: x.name,
-                                                        },
-                                                    };
-                                                }),
-                                            );
-
-                                        navigate('/neighborhood-explorer');
-                                    }}
-                                    tooltip="Show selection in neighborhood explorer"
-                                    tooltipOptions={{
-                                        position: 'bottom',
-                                        showDelay: 1000,
-                                    }}
-                                /> */}
-
-
 
         </div>
 
