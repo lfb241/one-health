@@ -14,6 +14,7 @@ import {
     MetadataOverviewPageComponent,
     NeighborhoodExplorerPageComponent,
 } from '../pages';
+import { CompoundSearchPageComponent } from '../components';
 
 function App() {
     return (
@@ -45,6 +46,11 @@ function App() {
                     <Route
                         path="ontology/data-load/0"
                         element={<DataLoadPageComponent />}
+                    />
+
+                    <Route
+                        path='search/compound-search'
+                        element={<CompoundSearchPageComponent />}
                     />
 
                     <Route

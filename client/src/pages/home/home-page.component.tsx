@@ -1,5 +1,5 @@
 import './home-page.component.scss';
-import heroSectionImage from '../../assets/img/hero-section-bg.png';
+import heroSectionImage from '../../assets/img/hero-section.png';
 import logoGlacier from '../../assets/logo_glacier.png';
 import logoIpb from '../../assets/logo_ipb.png';
 import logoForeign from '../../assets/logo_foreign_office.png';
@@ -120,8 +120,8 @@ const HomePageComponent: React.FC = () => {
                 <div className="col-3" >
                     <img
                         src={heroSectionImage}
-                        alt="Your SVG"
-                        style={{ width: '100%', height: '100%' }}
+                        alt="Earth surrounded by life and microbes"
+                        style={{ width: '100%', height: '98%' }}
                     />
                 </div>
             </div>
@@ -131,24 +131,28 @@ const HomePageComponent: React.FC = () => {
 
     return (
         <div className="page-container-narrow" id="home-page">
-            
-            <div>
-                <h2 style={{ textAlign: 'center' }}>
+
+            <div style={{ textAlign: 'center' }}>
+
+                <h3>
                     Empowering the research on plant-derived natural
                     products for the treatment of diseases
-                </h2>
+
+                </h3>
             </div>
 
 
             {GeneralSearchPanel({})}
-                          
 
+
+            <div className='row'>
             {heroSectionRow()}
 
+            </div>
             <div className='row'>
                 <div style={{ marginTop: '20px' }}>
                     <small style={{ textAlign: 'center' }}>
-                        developed and curated by
+                        This project is developed and curated by
                     </small>
                     <img
                         alt="logo"
@@ -204,6 +208,10 @@ const HomePageComponent: React.FC = () => {
                 </div>
 
             </div>
+
+
+
+
 
         </div>
 

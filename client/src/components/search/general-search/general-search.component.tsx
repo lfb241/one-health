@@ -24,7 +24,7 @@ import { ISavedGeneralSearch } from '../../../features/modules/search/search-his
 import { DataView } from 'primereact/dataview';
 import { INeighborhoodExplorerStore } from '../../../stores/neighborhood-explorer-store';
 import { ITutorialStore, STORES } from '../../../stores';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { IconField } from 'primereact/iconfield';
 import { InputIcon } from 'primereact/inputicon';
 import { faL } from '@fortawesome/free-solid-svg-icons';
@@ -32,7 +32,6 @@ import { Badge } from 'primereact/badge';
 import { darkenHexColor, truncateString } from '../../../utils';
 import GeneralSearchPageTourComponent from './general-search-tour.component';
 import './general-search.component.scss';
-
 
 export const GeneralSearchPanel: React.FC = () => {
     const navigate = useNavigate();
@@ -142,7 +141,6 @@ export const GeneralSearchPanel: React.FC = () => {
                                 e.stopPropagation();
                                 if (query.id != undefined)
                                     await historyService.delete(query.id);
-
                                 setHistory(
                                     await historyService.getAllAsOptions(
                                         messageService!,
@@ -160,10 +158,10 @@ export const GeneralSearchPanel: React.FC = () => {
         )
 
     }
-    
+
     return (
 
-        <div className='general-search-panel' id='general-search-panel'>
+        <div id='general-search-panel'>
 
             <GeneralSearchPageTourComponent
                 run={runTutorial}
@@ -174,41 +172,58 @@ export const GeneralSearchPanel: React.FC = () => {
                 className='general-search-header'
                 id="general-search-header">
 
-                <div className="p-inputgroup general-search-header-input">
+                <div className='wrapper' style={{ width: '80%', justifyContent: 'center', display: 'flex', flexDirection: 'column', marginTop:'20px' }}>
+                    <div style={{ display: 'flex' }}>
+                        <div className="p-inputgroup general-search-header-input">
 
-                    {tokenList(history)}
+                            {tokenList(history)}
 
-                    <InputText
-                        style={{
-                            border: 'none',        // Input selbst keine Border
-                            boxShadow: 'none',
-                        }}
-                        value={query}
-                        onChange={(e) => setQuery(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') runQuery();
-                        }}
-                        placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
-                    />
-                    <Button
-                        icon="pi pi-search"
-                        className="p-button-rounded p-button-text"
-                        onClick={runQuery}
-                        tooltip="Search in knowledge base"
-                        tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
-                    />
+                            <InputText
+                                style={{
+                                    border: 'none',        // Input selbst keine Border
+                                    boxShadow: 'none',
+                                }}
+                                value={query}
+                                onChange={(e) => setQuery(e.target.value)}
+                                onKeyDown={(e) => {
+                                    if (e.key === 'Enter') runQuery();
+                                }}
+                                placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
+                            />
+                            <Button
+                                icon="pi pi-search"
+                                className="p-button-rounded p-button-text"
+                                onClick={runQuery}
+                                tooltip="Search in knowledge base"
+                                tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
+                            />
+                        </div>
 
+
+                        <Button
+                            id="page-title-help-button"
+                            icon="pi pi-question-circle"
+                            style={{ marginLeft: '5px' }}
+                            onClick={helpClickedHandler}
+                            tooltip={`Watch tutorial`}
+                            tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
+                        />
+                    </div>
+                    <div className="general-search-links">
+                        <Link to="/" className="general-search-link">
+                            <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
+                        </Link>
+                        <Link to="/search/compound-search" className="general-search-link">
+                            <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
+                        </Link>
+                        <Link to="/" className="general-search-link">
+                            <i className="pi pi-history" style={{ fontSize: '1rem' }}></i> Search History
+                        </Link>
+                        {/* more links can be added here */}
+                    </div>
                 </div>
 
-                <Button
-                    id="page-title-help-button"
-                    icon="pi pi-question-circle"
-                    style={{ marginLeft: '5px' }}
-                    onClick={helpClickedHandler}
-                    tooltip={`Watch tutorial`}
-                    tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
-                />
-                <p style={{ marginTop: '10px' }}>
+                <p style={{ marginTop: '20px' }}>
                     using an advanced data collection, exchange and
                     analysis platform, with focus on the flora and
                     epidemiological needs of Latin-America
@@ -284,6 +299,7 @@ export const GeneralSearchPanel: React.FC = () => {
                 )}
 
             </div>
+
 
         </div>
 

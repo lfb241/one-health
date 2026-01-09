@@ -10,11 +10,26 @@
 }
 
 .general-search-header-input {
-    width: 50%;
+    width: 100%;
     border: 1px solid $app-border-color;
     border-radius: 4px;
     overflow: hidden;
+    
 }
+
+.general-search-links {
+    display: flex;
+    justify-content: center;
+    gap: 16px;         
+    margin-top: 12px;
+    margin-right: 20px;
+}
+
+.general-search-link {
+    color: rgb(77, 85, 92);
+    text-decoration: none;
+}
+
 
 .general-search-table {
     border: 1px solid $app-border-color;
