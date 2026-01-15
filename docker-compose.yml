@@ -23,13 +23,13 @@ services:
       dockerfile: ./docker/server/server.Dockerfile
     # TODO: expose for debuging purposes only 
     ports:
-       - "8080:8080"
+      - "8080:8080"
     networks:
-      - one-health-frontend
-      - one-health-backend
+      - frontend
+      - backend
     depends_on:
       postgredb:
-        condition: service_healthy  # ensures the correct start of postgredb
+          condition: service_healthy  # ensures the correct start of postgredb
       graphdb:
           condition: service_healthy
 
@@ -42,7 +42,7 @@ services:
       - "80:80"
     hostname: www.example.com
     networks:
-      - one-health-frontend
+      - frontend
      # use for production config
      # volumes:
      # - /srv/www/conf:/usr/local/apache2/conf
@@ -53,15 +53,15 @@ services:
     container_name: one-health-graphdb
     image: neo4j
     # expose graphdb ports for debugging only
-    # ports:
-    #    - "7474:7474"
-    #    - "7687:7687" # for BOLT-Protocol
+    #ports:
+    # - "7474:7474"
+    # - "7687:7687" # for BOLT-Protocol
     networks:
-      - one-health-backend
+      - backend
     volumes:
-      - /data/onehealth/neo4j_data:/data
+      - n4j_data:/var/lib/neo4j/data
     environment:
-      NEO4J_AUTH: none
+      NEO4J_AUTH: neo4j/password
       NEO4J_ACCEPT_LICENSE_AGREEMENT: "yes"
     healthcheck:
       test: ["CMD-SHELL", "wget --spider http://localhost:7474"]
@@ -77,22 +77,26 @@ services:
       dockerfile: ./docker/rdkit/rdkit.Dockerfile
     # expose database port for debugging only
     # ports:
-    #    - "5432:5433"
+    #  - "5432:5433"
     networks:
-      - one-health-backend
+      - backend
     volumes:
-      -  /data/onehealth/postgres_data:/var/lib/postgresql/data
+      -  pg_data:/var/lib/postgresql/data
     environment:
-      POSTGRES_USER: one_health_user
+      POSTGRES_USER: one_healt_huser
       POSTGRES_PASSWORD: one_health_password
       POSTGRES_DB: one_health
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U one_health_user -d one_health"]
+      test: ["CMD-SHELL", "pg_isready -U one_healt_huser -d one_health"]
       interval: 30s
       timeout: 30s
       retries: 5
       start_period: 30s
 
 networks:
-  one-health-frontend:
-  one-health-backend:
+  frontend:
+  backend:
+
+volumes:
+  pg_data:
+  n4j_data:
