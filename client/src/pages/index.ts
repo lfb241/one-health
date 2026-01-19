@@ -10,3 +10,4 @@ export { default as CoOcurrencesSummaryPageComponent } from './visualization/co-
 
 export { default as DocumentationPageComponent } from './documentation/documentation-page.component';
 export { default as LegalPageComponent } from './legal/legal-page.component';
+export {default as HeroSectionRow} from './home/hero-section-row.component'
