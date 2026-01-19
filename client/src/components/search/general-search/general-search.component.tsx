@@ -32,6 +32,11 @@ import { Badge } from 'primereact/badge';
 import { darkenHexColor, truncateString } from '../../../utils';
 import GeneralSearchPageTourComponent from './general-search-tour.component';
 import './general-search.component.scss';
+import CompoundSearchModal from '../compound-search/compound-search-modal';
+import { Dialog } from 'primereact/dialog';
+import OpenChemLib from 'openchemlib/full';
+import { unescape } from 'querystring';
+
 
 export const GeneralSearchPanel: React.FC = () => {
     const navigate = useNavigate();
@@ -39,6 +44,9 @@ export const GeneralSearchPanel: React.FC = () => {
     const [query, setQuery] = useState<string>();
     const [elements, setElements] = useState<any[]>([]);
     const [selectedElements, setSelectedElements] = useState<any[]>([]);
+    const [isModalOpen, setIsModalOpen] = useState<boolean | undefined>(false);
+
+
 
     const searchService = dependencyFactory.get<IGeneralSearchService>(
         SERVICES.IGeneralSearchService,
@@ -53,6 +61,7 @@ export const GeneralSearchPanel: React.FC = () => {
     const tutorialStore = dependencyFactory.get<ITutorialStore>(
         STORES.ITutorialStore,
     );
+
 
     const [history, setHistory] = useState<Partial<ISavedGeneralSearch>[]>([])
 
@@ -69,12 +78,12 @@ export const GeneralSearchPanel: React.FC = () => {
 
     const helpTourCallback = () => {
         setRunTutorial(false);
+        initWidgets();
         tutorialStore.setShowGeneralSearchTutorial(false);
         // tutorialStore.setShowCoOccurrencesSummaryTutorial(false);
     };
 
     useEffect(() => {
-        initWidgets();
     }, []);
 
     const initWidgets = async () => {
@@ -159,151 +168,199 @@ export const GeneralSearchPanel: React.FC = () => {
 
     }
 
-    return (
-
-        <div id='general-search-panel'>
-
-            <GeneralSearchPageTourComponent
-                run={runTutorial}
-                callback={helpTourCallback}>
-            </GeneralSearchPageTourComponent>
-
-            <div
-                className='general-search-header'
-                id="general-search-header">
-
-                <div className='wrapper' style={{ width: '80%', justifyContent: 'center', display: 'flex', flexDirection: 'column', marginTop:'20px' }}>
-                    <div style={{ display: 'flex' }}>
-                        <div className="p-inputgroup general-search-header-input">
-
-                            {tokenList(history)}
-
-                            <InputText
-                                style={{
-                                    border: 'none',        // Input selbst keine Border
-                                    boxShadow: 'none',
-                                }}
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
-                                onKeyDown={(e) => {
-                                    if (e.key === 'Enter') runQuery();
-                                }}
-                                placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
-                            />
-                            <Button
-                                icon="pi pi-search"
-                                className="p-button-rounded p-button-text"
-                                onClick={runQuery}
-                                tooltip="Search in knowledge base"
-                                tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
-                            />
-                        </div>
+    const [savedMolFile, setSavedMolFile] = useState<string | null>(null);
+    const [editor, setEditor] = useState<any>(null);
 
 
+    const handleHide = () => {
+        if (editor) {
+            const mol = editor.getMolFile();
+            setSavedMolFile(mol);  
+        }
+        setIsModalOpen(false);
+    };
+
+    const initEditor = () => {
+        const newEditor = OpenChemLib.StructureEditor.createSVGEditor(
+            'structureSearchEditor',
+            1
+        );
+
+        if (savedMolFile) {
+            newEditor.setMolFile(savedMolFile);
+        }
+
+        setEditor(newEditor);
+    }
+
+return (
+
+    <div id='general-search-panel'>
+
+        <GeneralSearchPageTourComponent
+            run={runTutorial}
+            callback={helpTourCallback}>
+        </GeneralSearchPageTourComponent>
+
+        <div
+            className='general-search-header'
+            id="general-search-header">
+
+            <div className='wrapper' style={{ width: '80%', justifyContent: 'center', display: 'flex', flexDirection: 'column', marginTop: '20px' }}>
+                <div style={{ display: 'flex' }}>
+                    <div className="p-inputgroup general-search-header-input">
+
+                        {tokenList(history)}
+
+                        <InputText
+                            style={{
+                                border: 'none',        // Input selbst keine Border
+                                boxShadow: 'none',
+                            }}
+                            value={query}
+                            onChange={(e) => setQuery(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter') runQuery();
+                            }}
+                            placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
+                        />
                         <Button
-                            id="page-title-help-button"
-                            icon="pi pi-question-circle"
-                            style={{ marginLeft: '5px' }}
-                            onClick={helpClickedHandler}
-                            tooltip={`Watch tutorial`}
+                            icon="pi pi-search"
+                            className="p-button-rounded p-button-text"
+                            onClick={runQuery}
+                            tooltip="Search in knowledge base"
                             tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
                         />
                     </div>
-                    <div className="general-search-links">
-                        <Link to="/" className="general-search-link">
-                            <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
-                        </Link>
-                        <Link to="/search/compound-search" className="general-search-link">
-                            <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
-                        </Link>
-                        <Link to="/" className="general-search-link">
-                            <i className="pi pi-history" style={{ fontSize: '1rem' }}></i> Search History
-                        </Link>
-                        {/* more links can be added here */}
-                    </div>
+
+
+                    <Button
+                        id="page-title-help-button"
+                        icon="pi pi-question-circle"
+                        style={{ marginLeft: '5px' }}
+                        onClick={helpClickedHandler}
+                        tooltip={`Watch tutorial`}
+                        tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
+                    />
                 </div>
-
-                <p style={{ marginTop: '20px' }}>
-                    using an advanced data collection, exchange and
-                    analysis platform, with focus on the flora and
-                    epidemiological needs of Latin-America
-                </p>
-
+                <div className="general-search-links">
+                    <Link to="/" className="general-search-link">
+                        <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
+                    </Link>
+                    <Link to="#" className="general-search-link" onClick={(e) => { e.preventDefault; setIsModalOpen(true) }}>
+                        <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
+                    </Link>
+                    <Link to="/" className="general-search-link">
+                        <i className="pi pi-history" style={{ fontSize: '1rem' }}></i> Search History
+                    </Link>
+                    {/* more links can be added here */}
+                </div>
             </div>
 
-            <div id='search-table'>
-                {searching && (
+            <Dialog
+                visible={isModalOpen}
+                header={() => {
+                    return (<PageTitle
+                        icon="fa fa-atom"
+                        title="Compound Search"
+                        help={false}    // TODO: add correct tutorial
+                        helpClickedHandler={helpClickedHandler}
+                    />)
+                }}
+                onHide={handleHide}
+                onShow={initEditor}
+                modal
+                style={{ width: '80%' }}
 
-                    <LoadingPlaceholderComponent></LoadingPlaceholderComponent>
+            >
 
 
+                <CompoundSearchModal editor={editor} />
 
-                )}
-                {searching === false && elements.length >= 0 && (
 
-                    <div className='general-search-table'>
+            </Dialog>
 
-                        <DataTable
-                            scrollable
-                            scrollHeight="650px"
-                            selectionMode="multiple"
-                            metaKeySelection={false}
-                            selection={selectedElements}
-                            emptyMessage="No entries found... Try again!"
-                            onSelectionChange={(e) =>
-                                setSelectedElements(e.value)
-                            }
-                            value={elements}
-                            tableStyle={{ minWidth: '50rem' }}>
-                            <Column
-                                field="name"
-                                style={{ width: '75%' }}
-                                sortable
-                                body={nameColumnTemplate}
-                                header="Name"></Column>
-                            <Column
-                                field="type"
-                                sortable
-                                header="Type"
-                                body={typeColumnTemplate}></Column>
-                        </DataTable>
-                        <Button
-                            icon="fa fa-compass"
-                            className='visualize-button'
-                            label='Visualize'
-                            size='small'
-                            onClick={() => {
-                                neighborhoodExplorerStore.nodes =
-                                    neighborhoodExplorerStore.nodes.concat(
-                                        selectedElements.map((x) => {
-                                            return {
-                                                data: {
-                                                    id: x.id,
-                                                    color: x.color,
-                                                    label: x.name,
-                                                },
-                                            };
-                                        }),
-                                    );
-
-                                navigate('/neighborhood-explorer');
-                            }}
-                            tooltip="Show selection in neighborhood explorer"
-                            tooltipOptions={{
-                                position: 'bottom',
-                                showDelay: 1000,
-                            }}
-                        />
-                    </div>
-
-                )}
-
-            </div>
-
+            <p style={{ marginTop: '20px' }}>
+                using an advanced data collection, exchange and
+                analysis platform, with focus on the flora and
+                epidemiological needs of Latin-America
+            </p>
 
         </div>
 
-    )
-};
+        <div id='search-table'>
+            {searching && (
+
+                <LoadingPlaceholderComponent></LoadingPlaceholderComponent>
+
+
+
+            )}
+            {searching === false && elements.length >= 0 && (
+
+                <div className='general-search-table'>
+
+                    <DataTable
+                        scrollable
+                        scrollHeight="650px"
+                        selectionMode="multiple"
+                        metaKeySelection={false}
+                        selection={selectedElements}
+                        emptyMessage="No entries found... Try again!"
+                        onSelectionChange={(e) =>
+                            setSelectedElements(e.value)
+                        }
+                        value={elements}
+                        tableStyle={{ minWidth: '50rem' }}>
+                        <Column
+                            field="name"
+                            style={{ width: '75%' }}
+                            sortable
+                            body={nameColumnTemplate}
+                            header="Name"></Column>
+                        <Column
+                            field="type"
+                            sortable
+                            header="Type"
+                            body={typeColumnTemplate}></Column>
+                    </DataTable>
+                    <Button
+                        icon="fa fa-compass"
+                        className='visualize-button'
+                        label='Visualize'
+                        size='small'
+                        onClick={() => {
+                            neighborhoodExplorerStore.nodes =
+                                neighborhoodExplorerStore.nodes.concat(
+                                    selectedElements.map((x) => {
+                                        return {
+                                            data: {
+                                                id: x.id,
+                                                color: x.color,
+                                                label: x.name,
+                                            },
+                                        };
+                                    }),
+                                );
+
+                            navigate('/neighborhood-explorer');
+                        }}
+                        tooltip="Show selection in neighborhood explorer"
+                        tooltipOptions={{
+                            position: 'bottom',
+                            showDelay: 1000,
+                        }}
+                    />
+                </div>
+
+            )}
+
+        </div>
+
+
+    </div>
+
+)
+}
 
 export default GeneralSearchPanel;
