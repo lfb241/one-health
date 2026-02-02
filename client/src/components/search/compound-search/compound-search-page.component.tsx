@@ -307,7 +307,7 @@ export const CompoundSearchPageComponent: React.FC = () => {
         <div className="page-container-narrow">
             <PageTitle
                 icon="fa fa-atom"
-                title="Compound Search"
+                title="Structure Search"
                 help={true}
                 helpClickedHandler={helpClickedHandler}
             />

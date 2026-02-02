@@ -275,7 +275,7 @@ export const CompoundSearchModal: React.FC<CompoundSearchModalProps> = ({editor}
 
                             <div className="d-flex col-2 justify-content-end">
                                 <Button
-                                    label="Search"
+                                    label="Search"  // TODO: wenn geklickt dann modal schließen
                                     onClick={onStructureSearch}></Button>
                             </div>
                         </div>

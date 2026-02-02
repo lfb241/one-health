@@ -258,26 +258,14 @@ return (
             </div>
 
             <Dialog
-                visible={isModalOpen}
-                header={() => {
-                    return (<PageTitle
-                        icon="fa fa-atom"
-                        title="Compound Search"
-                        help={false}    // TODO: add correct tutorial
-                        helpClickedHandler={helpClickedHandler}
-                    />)
-                }}
+                visible={isModalOpen} // TODO: add correct tutorial
+                header={() => { return (<PageTitle icon="fa fa-atom" title="Compound Search" help={false} helpClickedHandler={helpClickedHandler}/>)}}
                 onHide={handleHide}
                 onShow={initEditor}
                 modal
                 style={{ width: '80%' }}
-
             >
-
-
                 <CompoundSearchModal editor={editor} />
-
-
             </Dialog>
 
             <p style={{ marginTop: '20px' }}>
