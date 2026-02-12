@@ -4,13 +4,16 @@ public class ReferenceDTO {
     private String source;
     private String externalId;
     private String sourceUrl;
+    private String entityId;
 
-    public ReferenceDTO(){}
+    public ReferenceDTO() {
+    }
 
-    public ReferenceDTO(String source, String externalId, String sourceUrl){
+    public ReferenceDTO(String source, String externalId, String sourceUrl, String entityId) {
         this.source = source;
         this.externalId = externalId;
         this.sourceUrl = sourceUrl;
+        this.entityId = entityId;
     }
 
     public String getSource() {
@@ -35,5 +38,13 @@ public class ReferenceDTO {
 
     public void setSourceUrl(String sourceUrl) {
         this.sourceUrl = sourceUrl;
+    }
+
+    public String getEntityId() {
+        return entityId;
+    }
+
+    public void setEntityId(String entityId) {
+        this.entityId = entityId;
     }
 }

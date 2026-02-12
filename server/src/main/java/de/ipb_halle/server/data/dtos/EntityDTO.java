@@ -10,15 +10,17 @@ public class EntityDTO {
     private List<ReferenceDTO> references;
     private List<String> synonyms;
     private String color;
+    private String name;
 
     public EntityDTO() {
     }
 
-    public EntityDTO(String id, String type, List<String> labels, String color){
+    public EntityDTO(String id, String type, List<String> labels, String color, String name){
         this.id = id;
         this.type = type;
         this.labels = labels;
         this.color = color;
+        this.name = name;
 
     }
 
@@ -88,4 +90,8 @@ public class EntityDTO {
     public void setSynonyms(List<String> synonyms) {
         this.synonyms = synonyms;
     }
+
+    public void setName(String name){this.name = name; }
+
+    public String getName(){return this.name; }
 }
