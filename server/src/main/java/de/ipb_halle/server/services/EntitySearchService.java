@@ -4,7 +4,6 @@ import de.ipb_halle.server.data.dtos.EntityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.ipb_halle.server.data.dtos.EntitySearchResultDTO;
 import de.ipb_halle.server.data.interfaces.IEntityRepository;
 import de.ipb_halle.server.data.interfaces.IEntitySearchRepository;
 import de.ipb_halle.server.services.interfaces.IEntitySearchService;
