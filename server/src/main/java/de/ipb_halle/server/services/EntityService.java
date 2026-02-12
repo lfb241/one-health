@@ -7,7 +7,6 @@ import de.ipb_halle.server.data.dtos.LinkDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import de.ipb_halle.server.data.dtos.*;
 import de.ipb_halle.server.data.interfaces.IEntityRepository;
 import de.ipb_halle.server.services.interfaces.IEntityService;
 
@@ -34,8 +33,8 @@ public class EntityService implements IEntityService {
     }
 
     @Override
-    public EntityDTO GetNode(String nodeId) {
-        return entityRepository.GetNode(nodeId);
+    public List<EntityDTO> GetNodes(List<String> nodeIds) {
+        return entityRepository.GetNodes(nodeIds);
     }
 
     @Override

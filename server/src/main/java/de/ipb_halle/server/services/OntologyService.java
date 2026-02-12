@@ -41,7 +41,7 @@ public class OntologyService implements IOntologyService {
     }
 
     @Override
-    public EntityDTO GetNode(String nodeId) {
+    public List<EntityDTO> GetNodes(List<String> nodeIds) {
         return null;
     }
 

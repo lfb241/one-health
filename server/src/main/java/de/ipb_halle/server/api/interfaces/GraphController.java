@@ -38,8 +38,8 @@ public class GraphController {
 
     @GetMapping("get-node/{id}")
     public ResponseEntity<EntityDTO> GetNode(@PathVariable String id) {
-        var result = graphService.GetNode(id);
-        return new ResponseEntity<>(result, HttpStatus.OK);
+        var result = graphService.GetNodes(List.of(id));
+        return new ResponseEntity<>(result.isEmpty() ? null : result.get(0), HttpStatus.OK);
     }
 
 

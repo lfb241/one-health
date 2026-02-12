@@ -1,5 +1,6 @@
 package de.ipb_halle.server.services;
 
+import de.ipb_halle.server.data.dtos.EntityDTO;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -14,11 +15,8 @@ import java.util.List;
 @Service
 public class EntitySearchService implements IEntitySearchService {
 
-
-
     private final IEntitySearchRepository entitySearchRepository;
     private final IEntityRepository entityRepository;
-
 
     @Autowired
     public EntitySearchService(IEntitySearchRepository entitySearchRepository, IEntityRepository entityRepository) {
@@ -27,11 +25,11 @@ public class EntitySearchService implements IEntitySearchService {
     }
 
     @Override
-    public List<EntitySearchResultDTO> FindEntities(String query) {
+    public List<EntityDTO> FindEntities(String query) {
         if (StringProcessing.isSQLInjection(query)) {
             throw new RuntimeException();
         }
         var ids = entitySearchRepository.FindMatchingEntityIds(query);
-        return entityRepository.GetByIds(ids);
+        return entityRepository.GetNodes(ids);
     }
 }

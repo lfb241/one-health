@@ -148,7 +148,7 @@ public class N4JOntologyRepository implements IOntologyRepository {
     }
 
     @Override
-    public EntityDTO GetNode(String nodeId) {
+    public List<EntityDTO> GetNodes(List<String> nodeId) {
         return null;
     }
 

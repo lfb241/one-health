@@ -24,7 +24,7 @@ public class SearchController {
 
 
     @GetMapping("{query}")
-    public List<EntitySearchResultDTO> SearchTerm(@PathVariable String query){
+    public List<EntityDTO> SearchTerm(@PathVariable String query){
         return searchService.FindEntities(query);
     }
 
