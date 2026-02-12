@@ -7,6 +7,5 @@ import de.ipb_halle.server.data.dtos.EntitySearchResultDTO;
 import de.ipb_halle.server.data.dtos.LinkDTO;
 
 public interface IEntityRepository extends IGraphRepository{
-    List<EntitySearchResultDTO> GetByIds(List<String> ids);
     List<LinkDTO> GetGraphReferences(List<String> nodesIds);
 }
