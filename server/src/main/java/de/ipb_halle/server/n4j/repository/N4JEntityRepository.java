@@ -1,7 +1,6 @@
 package de.ipb_halle.server.n4j.repository;
 
 import de.ipb_halle.server.data.dtos.*;
-import de.ipb_halle.server.data.dtos.*;
 import org.neo4j.cypherdsl.core.*;
 import org.neo4j.driver.internal.value.MapValue;
 import org.springframework.data.neo4j.core.Neo4jTemplate;
@@ -22,7 +21,7 @@ public class N4JEntityRepository implements IEntityRepository {
 
     private final Neo4jTemplate neo4jTemplate;
 
-    N4JEntityRepository(Neo4jTemplate neo4jTemplate){
+    N4JEntityRepository(Neo4jTemplate neo4jTemplate) {
         this.neo4jTemplate = neo4jTemplate;
     }
 
@@ -116,25 +115,25 @@ public class N4JEntityRepository implements IEntityRepository {
 //            var properties = new ArrayList<N4JPropertyValue>();
             var properties = n.getProperties().stream().map(x ->
             {
-                var propertyMap = (MapValue)x;
+                var propertyMap = (MapValue) x;
                 return new N4JPropertyValue(propertyMap.asMap());
             }).toList();
 
 
             Map<String, Object> map = new HashMap<>();
 
-            for (var p : properties){
-                if (!map.containsKey(p.getName())){
+            for (var p : properties) {
+                if (!map.containsKey(p.getName())) {
                     map.put(p.getName(), p.getValue());
                 }
             }
 
-            var nodeType = (String)map.get("__type");
+            var nodeType = (String) map.get("__type");
             return new GraphNodeDTO(
-                n.getId(),
-                    (String)map.get(labels.get(nodeType)),
-                colors.get(nodeType),
-                1
+                    n.getId(),
+                    (String) map.get(labels.get(nodeType)),
+                    colors.get(nodeType),
+                    1
             );
         }).toList();
 
@@ -142,7 +141,7 @@ public class N4JEntityRepository implements IEntityRepository {
     }
 
     @Override
-    public List<LinkDTO> GetGraphReferences(List<String> nodesIds){
+    public List<LinkDTO> GetGraphReferences(List<String> nodesIds) {
         HashMap<String, String> labels = new HashMap<>();
 
         var nodeTypes = neo4jTemplate.findAll(N4JEntityType.class);
@@ -158,7 +157,7 @@ public class N4JEntityRepository implements IEntityRepository {
         Case nodeYLabelCaseStatement =
                 Case.create(nodeY.property("__type"));
 
-        for (var entityType: nodeTypes) {
+        for (var entityType : nodeTypes) {
             nodeXLabelCaseStatement = nodeXLabelCaseStatement
                     .when(Cypher.literalOf(entityType.getId()))
                     .then(nodeX.property(entityType.getLabel().getName()));
@@ -184,13 +183,26 @@ public class N4JEntityRepository implements IEntityRepository {
     }
 
     @Override
-    public EntityDTO GetNode(String nodeId) {
+    public List<EntityDTO> GetNodes(List<String> nodeIds) {
 
-        Parameter<String> nodeIdParam = Cypher.parameter("nodeId", nodeId);
+        if (nodeIds == null || nodeIds.isEmpty()) {
+            return List.of();
+        }
+
+
+        HashMap<String, N4JEntityType> types = new HashMap<>();
+
+        neo4jTemplate.findAll(N4JEntityType.class)
+                .forEach(x -> {
+                    types.put(x.getId(), x);
+                });
+
+        Parameter<List<String>> nodeIdsParam = Cypher.parameter("nodeIds", nodeIds);
         Node entityNode = Cypher.node("Entity").named("e");
-        Statement getNodeQuery = Cypher
+
+        Statement getNodesQuery = Cypher
                 .match(entityNode)
-                .where(entityNode.property("OHUUID").isEqualTo(nodeIdParam))
+                .where(entityNode.property("OHUUID").in(nodeIdsParam))
                 .with(
                         entityNode,
                         Functions.keys(Functions.properties(entityNode)).as("attributeKeys")
@@ -199,82 +211,103 @@ public class N4JEntityRepository implements IEntityRepository {
                 .returning(
                         entityNode.property("OHUUID").as("id"),
                         Functions.labels(entityNode).as("labels"),
-                        Functions.collect(Cypher.mapOf("name", Cypher.name("key"), "value", entityNode.property(Cypher.name("key")))).as("properties")
+                        Functions.collect(
+                                Cypher.mapOf(
+                                        "name", Cypher.name("key"),
+                                        "value", entityNode.property(Cypher.name("key"))
+                                )
+                        ).as("properties")
                 )
                 .build();
 
-        var entity = neo4jTemplate.findOne(getNodeQuery, new HashMap<>(), N4JEntity.class);
+        var entities = neo4jTemplate.findAll(getNodesQuery, N4JEntity.class);
 
-        if (entity.isEmpty())
-            return null;
+        if (entities.isEmpty())
+            return List.of();
 
+        // --- References ---
         Node sourceNode = Cypher.node("Source").named("s");
-        Relationship fromSourceRelationship = entityNode.relationshipTo(sourceNode, "FROM_SOURCE").named("r");
+
+        Relationship fromSourceRelationship =
+                entityNode.relationshipTo(sourceNode, "FROM_SOURCE").named("r");
 
         Statement getReferencesQuery = Cypher
                 .match(fromSourceRelationship)
-                .where(entityNode.property("OHUUID").isEqualTo(nodeIdParam))
+                .where(entityNode.property("OHUUID").in(nodeIdsParam))
                 .returning(
+                        entityNode.property("OHUUID").as("entityId"),
                         fromSourceRelationship.property("source").as("source"),
                         fromSourceRelationship.property("url").as("sourceUrl"),
                         fromSourceRelationship.property("externalid").as("externalId")
                 ).build();
 
-        var references = neo4jTemplate.findAll(getReferencesQuery, ReferenceDTO.class);
+        Map<String, List<ReferenceDTO>> referencesByEntityId = neo4jTemplate.findAll(getReferencesQuery, ReferenceDTO.class).stream()
+                .collect(Collectors.groupingBy(ReferenceDTO::getEntityId));
 
-
+        // --- Synonyms ---
         Node synonymNode = Cypher.node("Synonym").named("s");
-        Relationship hasSynonymRelationship = entityNode.relationshipTo(synonymNode, "HAS_SYNONYM").named("r");
+        Relationship hasSynonymRelationship =
+                entityNode.relationshipTo(synonymNode, "HAS_SYNONYM").named("r");
+
         Statement getSynonymsQuery = Cypher
                 .match(hasSynonymRelationship)
-                .where(entityNode.property("OHUUID").isEqualTo(nodeIdParam))
+                .where(entityNode.property("OHUUID").in(nodeIdsParam))
                 .returning(
+                        entityNode.property("OHUUID").as("entityId"),
                         synonymNode.property("name").as("name")
                 ).build();
 
-        var synonyms = neo4jTemplate.findAll(getSynonymsQuery, SynonymDTO.class);
+        Map<String, List<SynonymDTO>> synonymsByEntityId = neo4jTemplate.findAll(getSynonymsQuery, SynonymDTO.class).stream()
+                .collect(Collectors.groupingBy(SynonymDTO::getEntityId));
 
-        var entityValue = entity.get();
+        // --- DTO-Building ---
+        return entities.stream()
+                .map(entity -> {
 
-        var properties = entityValue.getProperties().stream().map(x ->
-        {
-            var propertyMap = (MapValue)x;
-            return new N4JPropertyValue(propertyMap.asMap());
-        }).toList();
+                    Map<String, Object> propertiesMap = entity.getProperties().stream()
+                            .map(x -> new N4JPropertyValue(((MapValue) x).asMap()))
+                            .collect(Collectors.toMap(N4JPropertyValue::getName, N4JPropertyValue::getValue));
+                    // map hält properties mit name, value
 
-        Map<String, Object> propertiesMap = properties.stream()
-                .collect(
-                        Collectors.toMap(N4JPropertyValue::getName, N4JPropertyValue::getValue));
+                    var nodeType = (String) propertiesMap.get("__type"); // type als string
+                    var nodeTypeValue = types.get(nodeType);
 
-        var nodeType = neo4jTemplate.findById(propertiesMap.get("__type"), N4JEntityType.class);
+                    var entityDto = new EntityDTO(
+                            entity.getId(),
+                            nodeTypeValue.getName(),
+                            entity.getLabels(),
+                            nodeTypeValue.getColor(),
+                            (String) propertiesMap.get(nodeTypeValue.getLabel().getName()));
 
-        if (nodeType.isEmpty())
-            return null;
+                    List<PropertyValueDTO> propertyValues = new ArrayList<>();
 
-        var nodeTypeValue = nodeType.get();
+                    for (N4JPropertyInfo p : nodeTypeValue.getProperties().stream().sorted((p1, p2) ->
+                            Integer.compare(p1.getPosition(), p2.getPosition())).toList()) {
+                        propertyValues.add(
+                                new PropertyValueDTO(
+                                        p.getName(),
+                                        propertiesMap.get(p.getName()),
+                                        p.getDataType(),
+                                        p.getPosition()
+                                )
+                        );
+                    }
 
-        var entityDto = new EntityDTO(nodeId, nodeTypeValue.getName(), entityValue.getLabels(), nodeTypeValue.getColor());
 
-        List<PropertyValueDTO> propertyValues = new ArrayList<>();
+                    entityDto.setProperties(propertyValues);
 
-        for (N4JPropertyInfo p : nodeTypeValue.getProperties().stream().sorted((p1, p2) -> Integer.compare(p1.getPosition(), p2.getPosition())).toList()) {
-            propertyValues.add(
-                    new PropertyValueDTO(
-                            p.getName(),
-                            propertiesMap.get(p.getName()),
-                            p.getDataType(),
-                            p.getPosition()
-                    )
-            );
-        }
+                    //    entityDto.setReferences(referencesByEntityId.getOrDefault(entity.getId(), List.of()));
 
-        entityDto.setProperties(propertyValues);
-        entityDto.setReferences(references);
-        entityDto.setSynonyms(synonyms.stream().map(SynonymDTO::getName).toList());
+                    entityDto.setSynonyms(synonymsByEntityId.getOrDefault(entity.getId(), List.of())
+                            .stream()
+                            .map(SynonymDTO::getName)
+                            .toList());
 
-        return entityDto;
-
+                    return entityDto;
+                })
+                .toList();
     }
+
 
     @Override
     public GraphLinkDTO GetLink(String linkId) {
@@ -303,72 +336,6 @@ public class N4JEntityRepository implements IEntityRepository {
                 ).build();
 
         return neo4jTemplate.findAll(getLinkReferencesQuery, LinkDTO.class);
-    }
-
-    @Override
-    public List<EntitySearchResultDTO> GetByIds(List<String> ids) {
-        HashMap<String, String> colors = new HashMap<>();
-        HashMap<String, String> labels = new HashMap<>();
-        HashMap<String, String> types = new HashMap<>();
-
-        var nodeTypes = neo4jTemplate.findAll(N4JEntityType.class);
-        nodeTypes.forEach(x -> {
-            colors.put(x.getId(), x.getColor());
-            if (x.getLabel() != null)
-                labels.put(x.getId(), x.getLabel().getName());
-            types.put(x.getId(), x.getName());
-        });
-
-
-
-        Parameter<List<String>> nodeIdsParam = Cypher.parameter("nodeIds", ids);
-        Node node = Cypher.node("Entity").named("n");
-        Statement queryDSL = Cypher
-                .match(node)
-                .where(node.property("OHUUID").in(nodeIdsParam))
-                .with(
-                        node,
-                        Functions.keys(Functions.properties(node)).as("attributeKeys")
-                )
-                .unwind(Cypher.name("attributeKeys")).as("key")
-                .returning(
-                        node.property("OHUUID").as("id"),
-                        Functions.labels(node).as("labels"),
-                        Functions.collect(Cypher.mapOf("name", Cypher.name("key"), "value", node.property(Cypher.name("key")))).as("properties")
-                )
-                .build();
-
-        var matchedEntities = neo4jTemplate.findAll(queryDSL, N4JEntity.class);
-
-
-        var newNodes = matchedEntities.stream().map(n -> {
-//            var properties = new ArrayList<N4JPropertyValue>();
-            var properties = n.getProperties().stream().map(x ->
-            {
-                var propertyMap = (MapValue)x;
-                return new N4JPropertyValue(propertyMap.asMap());
-            }).toList();
-
-
-            Map<String, Object> map = new HashMap<>();
-
-            for (var p : properties){
-                if (!map.containsKey(p.getName())){
-                    map.put(p.getName(), p.getValue());
-                }
-            }
-
-            var nodeType = (String)map.get("__type");
-            return new EntitySearchResultDTO(
-                    n.getId(),
-                    (String)map.get(labels.get(nodeType)),
-                    types.get(nodeType),
-                    colors.get(nodeType),
-                    n.getId()
-            );
-        }).toList();
-
-        return newNodes;
     }
 
 }
