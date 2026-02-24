@@ -21,9 +21,11 @@ public class SearchController {
     }
 
 
-    @GetMapping("{query}")
-    public List<EntityDTO> SearchTerm(@PathVariable String query){
+    @GetMapping()
+    public List<EntityDTO> SearchTerm(@RequestParam String query) {
+
         return searchService.FindEntities(query);
+
     }
 
 
