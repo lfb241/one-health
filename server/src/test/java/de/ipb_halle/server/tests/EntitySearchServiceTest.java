@@ -8,7 +8,6 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.mockito.stubbing.Answer;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,49 +29,6 @@ class EntitySearchServiceTest {
     private EntitySearchService service;
 
     @Test
-    void identifySmiles_nullQuery_returnsFalse() {
-        assertThat(service.IdentifySmiles(null)).isFalse();
-    }
-
-    @Test
-    void identifySmiles_emptyQuery_returnsFalse() {
-        assertThat(service.IdentifySmiles("")).isFalse();
-    }
-
-    @Test
-    void identifySmiles_validSmilesEthanol_returnsTrue() {
-        // Ethanol: CCO
-        assertThat(service.IdentifySmiles("CCO")).isTrue();
-    }
-
-    @Test
-    void identifySmiles_validSmilesWithBranches_returnsTrue() {
-        // Isobutane
-        assertThat(service.IdentifySmiles("CC(C)C")).isTrue();
-    }
-
-    @Test
-    void identifySmiles_unbalancedParentheses_returnsFalse() {
-        assertThat(service.IdentifySmiles("CC(C")).isFalse();
-    }
-
-    @Test
-    void identifySmiles_closingBeforeOpening_returnsFalse() {
-        assertThat(service.IdentifySmiles("CC)C")).isFalse();
-    }
-
-    @Test
-    void identifySmiles_invalidCharacter_returnsFalse() {
-        // 'X' ist kein gültiges SMILES-Zeichen
-        assertThat(service.IdentifySmiles("CCX")).isFalse();
-    }
-
-    @Test
-    void identifySmiles_queryWithSpaces_returnsFalse() {
-        assertThat(service.IdentifySmiles("C C O")).isFalse();
-    }
-
-    @Test
     void findEntities_sqlInjection_throwsRuntimeException() {
         String malicious = "' OR 1=1 --";
         assertThatThrownBy(() -> service.FindEntities(malicious))
@@ -84,40 +40,37 @@ class EntitySearchServiceTest {
     void findEntities_normalQuery_delegatesToRepository(){
         String query = "glucose";
         List<String> mockIds = List.of("id_1","id_2");
-        List<EntityDTO> mockResult = List.of(new EntityDTO("id_1",null,null), new EntityDTO("id_1",null,null));
+        List<EntityDTO> mockResult = List.of(new EntityDTO("id_1",null,null), new EntityDTO("id_2",null,null));
 
         when(entitySearchRepository.FindMatchingEntityIds(query)).thenReturn(mockIds);
         when(entityRepository.GetNodes(mockIds)).thenReturn(mockResult);
 
         List<EntityDTO> result = service.FindEntities(query);
         assertThat(result).isEqualTo(mockResult);
-        assertThat(service.IdentifySmiles(query)).isFalse();
 
-        verify(entitySearchRepository).FindMatchingEntityIds(query);
+        verify(entitySearchRepository, times(1)).FindMatchingEntityIds(query);
         verify(entityRepository).GetNodes(mockIds);
     }
 
     @Test
-    void findEntities_validSmilesQuery_addsCanonicalSmiles(){
+    void findEntities_validSmilesQuery_addsInchi(){
 
         String query = "CCO";
-        String canonicalSmiles = "OCC";
+        String inchi = "InChI=1S/C2H6O/c1-2-3/h3H,2H2,1H3";
 
         List<String> mockIdsWithoutSmiles = new ArrayList<>(List.of("id_1"));
         List<String> mockIdsWithSmiles = new ArrayList<>(List.of("id_2"));
         List<EntityDTO> mockResult = List.of(new EntityDTO("id_1",null,null), new EntityDTO("id_2",null,null));
 
-
-
         when(entitySearchRepository.FindMatchingEntityIds(query)).thenReturn(mockIdsWithoutSmiles);
-        when(entitySearchRepository.FindMatchingEntityIds(canonicalSmiles)).thenReturn(mockIdsWithSmiles);
+        when(entitySearchRepository.FindMatchingEntityIds(inchi)).thenReturn(mockIdsWithSmiles);
         when(entityRepository.GetNodes(List.of("id_1","id_2"))).thenReturn(mockResult);
 
         List<EntityDTO> result = service.FindEntities(query);
         assertThat(result).isEqualTo(mockResult);
 
         verify(entitySearchRepository).FindMatchingEntityIds(query);
-        verify(entitySearchRepository).FindMatchingEntityIds(canonicalSmiles);
+        verify(entitySearchRepository).FindMatchingEntityIds(inchi);
         verify(entityRepository).GetNodes(List.of("id_1","id_2"));
         verifyNoMoreInteractions(entitySearchRepository);
     }

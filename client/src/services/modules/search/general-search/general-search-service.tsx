@@ -30,7 +30,8 @@ export class GeneralSearchService extends IGeneralSearchService {
         messageService: MessageService,
         httpResponseHandlerSettings?: IHttpResponseHandlerSettings | undefined,
     ): Promise<any> {
-        const query = { query: value };
+        const encodedValue = encodeURIComponent(value);
+        const query = { query: encodedValue };
 
         return this.handleRequest<any>(
             axios.get<any>(`${this.url}`, {
