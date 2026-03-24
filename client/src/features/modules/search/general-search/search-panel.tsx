@@ -24,6 +24,7 @@ import { Dialog } from 'primereact/dialog';
 import OpenChemLib from 'openchemlib/full';
 import SearchResultTable from './search-result-table.component';
 import { SelectButton } from 'primereact/selectbutton';
+import { GeneralSearchResultsPanel } from './general-search-results-panel.component';
 
 export const SearchPanel: React.FC = () => {
     const navigate = useNavigate();
@@ -111,7 +112,7 @@ export const SearchPanel: React.FC = () => {
                         break;
                 }
             });
-        
+
             const maxIndex = updatedOptions.reduce((maxIdx, opt, idx) => {
                 return opt.counter > updatedOptions[maxIdx].counter ? idx : maxIdx;
             }, 0);
@@ -229,7 +230,7 @@ export const SearchPanel: React.FC = () => {
 
                             <InputText
                                 style={{
-                                    border: 'none',  
+                                    border: 'none',
                                     boxShadow: 'none',
                                 }}
                                 value={query}
@@ -273,11 +274,11 @@ export const SearchPanel: React.FC = () => {
                         {/* more links can be added here */}
                     </div>
                 </div>
-                
+
                 {/* TODO: verheiraten mit Compound-Search Logik */}
                 {/* TODO: add correct tutorial */}
                 <Dialog
-                    visible={isModalOpen} 
+                    visible={isModalOpen}
                     header={() => { return (<PageTitle icon="fa fa-atom" title="Compound Search" help={false} helpClickedHandler={helpClickedHandler} />) }}
                     onHide={handleHide}
                     onShow={initEditor}
@@ -294,57 +295,56 @@ export const SearchPanel: React.FC = () => {
                 </p>
 
             </div>
-            
             <div id='search-table'>
                 {searching && (
 
                     <LoadingPlaceholderComponent></LoadingPlaceholderComponent>
                 )}
                 {searching === false
-                 && (
+                    && (
 
-                    <div>
-                        <SelectButton value={value} onChange={(e) => { setValue(e.value) }} itemTemplate={optionTemplate} options={options} optionLabel="name" />
-                        <div className='general-search-table'>
-                            <SearchResultTable
-                                elements={elements}
-                                type={value}
-                                selectedElements={selectedElements}
-                                setSelectedElements={setSelectedElements}
-                            />
-                            <Button
-                                icon="fa fa-compass"
-                                className='visualize-button'
-                                label='Visualize'
-                                size='small'
-                                onClick={() => {
-                                    neighborhoodExplorerStore.nodes =
-                                        neighborhoodExplorerStore.nodes.concat(
-                                            selectedElements.map((x) => {
-                                                return {
-                                                    data: {
-                                                        id: x.id,
-                                                        color: x.color,
-                                                        label: x.name,
-                                                    },
-                                                };
-                                            }),
-                                        );
+                        <div>
+                            <SelectButton value={value} onChange={(e) => { setValue(e.value) }} itemTemplate={optionTemplate} options={options} optionLabel="name" />
+                            <div className='general-search-table'>
+                                <SearchResultTable
+                                    elements={elements}
+                                    type={value}
+                                    selectedElements={selectedElements}
+                                    setSelectedElements={setSelectedElements}
+                                />
+                                <Button
+                                    icon="fa fa-compass"
+                                    className='visualize-button'
+                                    label='Visualize'
+                                    size='small'
+                                    onClick={() => {
+                                        neighborhoodExplorerStore.nodes =
+                                            neighborhoodExplorerStore.nodes.concat(
+                                                selectedElements.map((x) => {
+                                                    return {
+                                                        data: {
+                                                            id: x.id,
+                                                            color: x.color,
+                                                            label: x.name,
+                                                        },
+                                                    };
+                                                }),
+                                            );
 
-                                    navigate('/neighborhood-explorer');
-                                }}
-                                tooltip="Show selection in neighborhood explorer"
-                                tooltipOptions={{
-                                    position: 'bottom',
-                                    showDelay: 1000,
-                                }}
-                            />
+                                        navigate('/neighborhood-explorer');
+                                    }}
+                                    tooltip="Show selection in neighborhood explorer"
+                                    tooltipOptions={{
+                                        position: 'bottom',
+                                        showDelay: 1000,
+                                    }}
+                                />
+                            </div>
                         </div>
-                    </div>
-                )}
+                    )}
 
             </div>
-
+            <GeneralSearchResultsPanel results={elements} />
 
         </div>
 
