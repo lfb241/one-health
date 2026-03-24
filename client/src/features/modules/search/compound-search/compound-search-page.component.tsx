@@ -1,18 +1,18 @@
 import { useContext, useEffect, useState } from 'react';
-import { StructureFilterMatchMode } from '../../../features/filters/enums/structure-filter-match-mode';
+import { StructureFilterMatchMode } from '../../../filters/enums/structure-filter-match-mode';
 import {
     CollectionPlaceholderComponent,
     LoadingPlaceholderComponent,
     PageTitle,
-} from '../../../components';
+} from '../../../../components';
 import { Panel } from 'primereact/panel';
-import StructureEditor from '../../../features/filters/structure-editor.component';
+import StructureEditor from '../../../filters/structure-editor.component';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { dependencyFactory } from '../../../features/shared/injection';
-import { ICompoundService, SERVICES } from '../../../services';
-import { MessageServiceContext } from '../../../features/shared/messages';
+import { dependencyFactory } from '../../../shared/injection';
+import { ICompoundService, SERVICES } from '../../../../services';
+import { MessageServiceContext } from '../../../shared/messages';
 import { SplitButton } from 'primereact/splitbutton';
 import {
     FileUpload,
@@ -29,11 +29,11 @@ import { ProgressSpinner } from 'primereact/progressspinner';
 import { faL } from '@fortawesome/free-solid-svg-icons';
 import { RadioButton } from 'primereact/radiobutton';
 import { InputTextarea } from 'primereact/inputtextarea';
-import { INeighborhoodExplorerStore } from '../../../stores/neighborhood-explorer-store';
-import { ITutorialStore, STORES } from '../../../stores';
+import { INeighborhoodExplorerStore } from '../../../../stores/neighborhood-explorer-store';
+import { ITutorialStore, STORES } from '../../../../stores';
 import { useNavigate } from 'react-router-dom';
 import CompoundSearchPageTourComponent from './compound-search-page-tour.component';
-import MolecularDrawComponent from '../../../features/shared/molecular-draw/molecular-draw.component';
+import MolecularDrawComponent from '../../../shared/molecular-draw/molecular-draw.component';
 import OpenChemLib from 'openchemlib/full';
 
 export interface CompoundSearchQuery {

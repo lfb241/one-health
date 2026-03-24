@@ -1,8 +1,8 @@
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 import React from 'react';
-import queryGif from '../../../assets/tutorials/search/general-search/general_search_examples.gif';
-import toNeighborhoodGif from '../../../assets/tutorials/search/general-search/general_search_neighbordhood.gif';
-import historyGif from '../../../assets/tutorials/search/general-search/general_search_history.gif';
+import queryGif from '../../../../assets/tutorials/search/general-search/general_search_examples.gif';
+import toNeighborhoodGif from '../../../../assets/tutorials/search/general-search/general_search_neighbordhood.gif';
+import historyGif from '../../../../assets/tutorials/search/general-search/general_search_history.gif';
 
 interface GeneralSearchPageTourProps {
     run: boolean;

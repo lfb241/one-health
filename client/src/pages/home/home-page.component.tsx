@@ -5,11 +5,10 @@ import logoForeign from '../../assets/logo_foreign_office.png';
 
 import './home-page.component.scss';
 import React from 'react';
-import GeneralSearchPanel from '../../components/search/general-search/general-search.component';
 import HeroSectionRow from './hero-section-row.component';
+import SearchPanel from '../../features/modules/search/general-search/search-panel';
 
 const HomePageComponent: React.FC = () => {
-
 
     return (
         <div className="page-container-narrow" id="home-page">
@@ -23,9 +22,7 @@ const HomePageComponent: React.FC = () => {
                 </h3>
             </div>
 
-
-             <GeneralSearchPanel></GeneralSearchPanel> 
-
+             <SearchPanel></SearchPanel> 
 
          <div className='row'>
             <HeroSectionRow/>

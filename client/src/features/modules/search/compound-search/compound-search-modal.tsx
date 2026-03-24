@@ -1,16 +1,16 @@
 import { useContext, useEffect, useState } from 'react';
-import { StructureFilterMatchMode } from '../../../features/filters/enums/structure-filter-match-mode';
+import { StructureFilterMatchMode } from '../../../filters/enums/structure-filter-match-mode';
 import {
     CollectionPlaceholderComponent,
     LoadingPlaceholderComponent,
     PageTitle,
-} from '../../../components';
+} from '../../../../components';
 import { Panel } from 'primereact/panel';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
-import { dependencyFactory } from '../../../features/shared/injection';
-import { ICompoundService, SERVICES } from '../../../services';
-import { MessageServiceContext } from '../../../features/shared/messages';
+import { dependencyFactory } from '../../../shared/injection';
+import { ICompoundService, SERVICES } from '../../../../services';
+import { MessageServiceContext } from '../../../shared/messages';
 import {
     FileUpload,
     FileUploadHandlerEvent,
@@ -19,11 +19,11 @@ import {
 import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator';
 import { InputNumber } from 'primereact/inputnumber';
 import { Slider } from 'primereact/slider';
-import { INeighborhoodExplorerStore } from '../../../stores/neighborhood-explorer-store';
-import { ITutorialStore, STORES } from '../../../stores';
+import { INeighborhoodExplorerStore } from '../../../../stores/neighborhood-explorer-store';
+import { ITutorialStore, STORES } from '../../../../stores';
 import { useNavigate } from 'react-router-dom';
 import CompoundSearchPageTourComponent from './compound-search-page-tour.component';
-import MolecularDrawComponent from '../../../features/shared/molecular-draw/molecular-draw.component';
+import MolecularDrawComponent from '../../../shared/molecular-draw/molecular-draw.component';
 import OpenChemLib from 'openchemlib/full';
 
 export interface CompoundSearchQuery {

@@ -53,9 +53,9 @@ services:
     container_name: one-health-graphdb
     image: neo4j
     # expose graphdb ports for debugging only
-    #ports:
-    # - "7474:7474"
-    # - "7687:7687" # for BOLT-Protocol
+    ports:
+     - "7474:7474"
+     - "7687:7687" # for BOLT-Protocol
     networks:
       - backend
     volumes:
