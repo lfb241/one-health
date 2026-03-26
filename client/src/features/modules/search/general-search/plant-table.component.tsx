@@ -1,9 +1,11 @@
 import { DataTable } from "primereact/datatable"
 import { Column } from 'primereact/column';
-import { nameColumnTemplate, smilesColumnTemplate, structureDrawTemplate, weightColumnTemplate } from "./column-templates";
+import { familyColumnTemplate, kingdomColumnTemplate, nameColumnTemplate, phylumColumnTemplate } from "./column-templates";
 import { ResultTableProps } from "./models/result-table-props";
 
-export const NaturalProductTable = ({ results, selectedElements, setSelectedElements }: ResultTableProps) => {
+
+
+export const PlantTable = ({ results, selectedElements, setSelectedElements }: ResultTableProps) => {
 
 
     return (
@@ -20,10 +22,10 @@ export const NaturalProductTable = ({ results, selectedElements, setSelectedElem
             value={results}
             tableStyle={{ minWidth: '50rem' }}
         >
-            <Column header="Structure" body={structureDrawTemplate} ></Column>
-            <Column field="name" header="Mol. Formula" body={nameColumnTemplate} sortable></Column>
-            <Column header="Mol.Weight" body={weightColumnTemplate}></Column>
-            <Column header="SMILES" body={smilesColumnTemplate}></Column>
+            <Column field="name" header="Scientific Name" body={nameColumnTemplate} sortable></Column>
+            <Column header="Kingdom" body={kingdomColumnTemplate}></Column>
+            <Column header="Phylum" body={phylumColumnTemplate}></Column>
+            <Column header="Family" body={familyColumnTemplate}></Column>
         </DataTable>
     )
 }

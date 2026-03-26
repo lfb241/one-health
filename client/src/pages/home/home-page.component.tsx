@@ -6,7 +6,7 @@ import logoForeign from '../../assets/logo_foreign_office.png';
 import './home-page.component.scss';
 import React from 'react';
 import HeroSectionRow from './hero-section-row.component';
-import SearchPanel from '../../features/modules/search/general-search/search-panel';
+import SearchPanel from '../../features/modules/search/general-search/search-panel.component';
 
 const HomePageComponent: React.FC = () => {
 

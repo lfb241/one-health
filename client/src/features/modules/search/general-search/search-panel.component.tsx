@@ -1,6 +1,7 @@
 import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import {
+    CollectionPlaceholderComponent,
     LoadingPlaceholderComponent,
     PageTitle
 } from '../../../../components';
@@ -22,16 +23,15 @@ import './general-search.component.scss';
 import CompoundSearchModal from '../compound-search/compound-search-modal';
 import { Dialog } from 'primereact/dialog';
 import OpenChemLib from 'openchemlib/full';
-import SearchResultTable from './search-result-table.component';
-import { SelectButton } from 'primereact/selectbutton';
-import { GeneralSearchResultsPanel } from './general-search-results-panel.component';
+import { SearchResultsPanel } from './search-results-table.component';
+import { IEntityDTO } from './models/entity-dto';
 
 export const SearchPanel: React.FC = () => {
     const navigate = useNavigate();
 
     const [query, setQuery] = useState<string>();
-    const [elements, setElements] = useState<any[]>([]);
-    const [selectedElements, setSelectedElements] = useState<any[]>([]);
+    const [elements, setElements] = useState<IEntityDTO[]>([]);
+    const [selectedElements, setSelectedElements] = useState<IEntityDTO[]>([]);
     const [isModalOpen, setIsModalOpen] = useState<boolean | undefined>(false);
 
 
@@ -77,13 +77,6 @@ export const SearchPanel: React.FC = () => {
 
 
 
-    const [value, setValue] = useState<number | null>(null)
-    const [options, setOptions] = useState([
-        { name: "Natural Products", counter: 0, value: 0 },
-        { name: "Plants", counter: 0, value: 1 },
-        { name: "Diseases", counter: 0, value: 2 },
-    ]);
-
     const runQuery = async () => {
         if ((!searching || searching === null) && query) {
             setSearching(true);
@@ -92,33 +85,6 @@ export const SearchPanel: React.FC = () => {
                 messageService!,
             );
             setElements(elements);
-
-
-            const updatedOptions = options.map(option => ({
-                ...option,
-                counter: 0
-            }));
-
-            elements.forEach((element: { type: any }) => {
-                switch (element.type) {
-                    case "Natural Product":
-                        updatedOptions[0].counter += 1;
-                        break;
-                    case "Plant":
-                        updatedOptions[1].counter += 1;
-                        break;
-                    case "Disease":
-                        updatedOptions[2].counter += 1;
-                        break;
-                }
-            });
-
-            const maxIndex = updatedOptions.reduce((maxIdx, opt, idx) => {
-                return opt.counter > updatedOptions[maxIdx].counter ? idx : maxIdx;
-            }, 0);
-
-            setValue(maxIndex);
-            setOptions(updatedOptions);
             setSelectedElements([]);
             setSearching(false);
             await historyService.create(
@@ -197,16 +163,8 @@ export const SearchPanel: React.FC = () => {
         setEditor(newEditor);
     }
 
-
-    // TODO: Typen zählen und vom höchsten Value dazu
-
-
-    const optionTemplate = (option: any) => {
-        return <span>{option.name} ({option.counter})</span>
-    }
-
     useEffect(() => {
-    }, []);
+    });
 
 
     return (
@@ -260,7 +218,7 @@ export const SearchPanel: React.FC = () => {
                         />
 
                     </div>
-                    {/* TODO:Buttons mit Navigate?*/}
+                {/* TODO: implement as Buttons?*/}
                     <div className="general-search-links">
                         <Link to="/" className="general-search-link">
                             <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
@@ -274,9 +232,6 @@ export const SearchPanel: React.FC = () => {
                         {/* more links can be added here */}
                     </div>
                 </div>
-
-                {/* TODO: verheiraten mit Compound-Search Logik */}
-                {/* TODO: add correct tutorial */}
                 <Dialog
                     visible={isModalOpen}
                     header={() => { return (<PageTitle icon="fa fa-atom" title="Compound Search" help={false} helpClickedHandler={helpClickedHandler} />) }}
@@ -285,7 +240,7 @@ export const SearchPanel: React.FC = () => {
                     modal
                     style={{ width: '80%' }}
                 >
-                    <CompoundSearchModal editor={editor} />
+                    <CompoundSearchModal editor={editor} elements={elements} setElements={setElements} selectedElements={selectedElements} setSelectedElement={setSelectedElements}/>
                 </Dialog>
 
                 <p style={{ marginTop: '20px' }}>
@@ -296,56 +251,47 @@ export const SearchPanel: React.FC = () => {
 
             </div>
             <div id='search-table'>
-                {searching && (
+                {searching &&( <LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
 
-                    <LoadingPlaceholderComponent></LoadingPlaceholderComponent>
-                )}
-                {searching === false
-                    && (
+                {searching === false &&(
+            
+                    <div className='general-search-table'>
+                        <SearchResultsPanel results={elements} />
 
-                        <div>
-                            <SelectButton value={value} onChange={(e) => { setValue(e.value) }} itemTemplate={optionTemplate} options={options} optionLabel="name" />
-                            <div className='general-search-table'>
-                                <SearchResultTable
-                                    elements={elements}
-                                    type={value}
-                                    selectedElements={selectedElements}
-                                    setSelectedElements={setSelectedElements}
-                                />
-                                <Button
-                                    icon="fa fa-compass"
-                                    className='visualize-button'
-                                    label='Visualize'
-                                    size='small'
-                                    onClick={() => {
-                                        neighborhoodExplorerStore.nodes =
-                                            neighborhoodExplorerStore.nodes.concat(
-                                                selectedElements.map((x) => {
-                                                    return {
-                                                        data: {
-                                                            id: x.id,
-                                                            color: x.color,
-                                                            label: x.name,
-                                                        },
-                                                    };
-                                                }),
-                                            );
+                        <Button
+                            icon="fa fa-compass"
+                            className='visualize-button'
+                            label='Visualize'
+                            size='small'
+                            onClick={() => {
+                                neighborhoodExplorerStore.nodes =
+                                    neighborhoodExplorerStore.nodes.concat(
+                                        selectedElements.map((x) => {
+                                            return {
+                                                data: {
+                                                    id: x.id,
+                                                    color: x.color,
+                                                    label: x.name,
+                                                },
+                                            };
+                                        }),
+                                    );
 
-                                        navigate('/neighborhood-explorer');
-                                    }}
-                                    tooltip="Show selection in neighborhood explorer"
-                                    tooltipOptions={{
-                                        position: 'bottom',
-                                        showDelay: 1000,
-                                    }}
-                                />
-                            </div>
-                        </div>
-                    )}
+                                navigate('/neighborhood-explorer');
+                            }}
+                            tooltip="Show selection in neighborhood explorer"
+                            tooltipOptions={{
+                                position: 'bottom',
+                                showDelay: 1000,
+                            }}
+                        />
+                    </div>)}
+
+
+
+
 
             </div>
-            <GeneralSearchResultsPanel results={elements} />
-
         </div>
 
     )
