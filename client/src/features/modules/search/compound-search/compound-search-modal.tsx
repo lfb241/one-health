@@ -1,10 +1,5 @@
-import { useContext, useEffect, useState } from 'react';
+import { Dispatch, SetStateAction, useContext, useState } from 'react';
 import { StructureFilterMatchMode } from '../../../filters/enums/structure-filter-match-mode';
-import {
-    CollectionPlaceholderComponent,
-    LoadingPlaceholderComponent,
-    PageTitle,
-} from '../../../../components';
 import { Panel } from 'primereact/panel';
 import { Dropdown } from 'primereact/dropdown';
 import { Button } from 'primereact/button';
@@ -16,15 +11,9 @@ import {
     FileUploadHandlerEvent,
     FileUploadSelectEvent,
 } from 'primereact/fileupload';
-import { Paginator, PaginatorPageChangeEvent } from 'primereact/paginator';
 import { InputNumber } from 'primereact/inputnumber';
 import { Slider } from 'primereact/slider';
-import { INeighborhoodExplorerStore } from '../../../../stores/neighborhood-explorer-store';
-import { ITutorialStore, STORES } from '../../../../stores';
-import { useNavigate } from 'react-router-dom';
-import CompoundSearchPageTourComponent from './compound-search-page-tour.component';
-import MolecularDrawComponent from '../../../shared/molecular-draw/molecular-draw.component';
-import OpenChemLib from 'openchemlib/full';
+import { IEntityDTO } from '../general-search/models/entity-dto';
 
 export interface CompoundSearchQuery {
     value?: string;
@@ -42,6 +31,10 @@ export interface ExactSearchQuery {
 
 interface CompoundSearchModalProps {
     editor?: any;  
+    elements: IEntityDTO[];
+    setElements: Dispatch<SetStateAction<IEntityDTO[]>>
+    selectedElements: IEntityDTO[];
+    setSelectedElements: Dispatch<SetStateAction<IEntityDTO[]>>
 }
 
 export const CompoundSearchModal: React.FC<CompoundSearchModalProps> = ({editor}) => {

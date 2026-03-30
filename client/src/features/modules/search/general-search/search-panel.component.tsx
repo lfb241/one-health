@@ -240,7 +240,7 @@ export const SearchPanel: React.FC = () => {
                     modal
                     style={{ width: '80%' }}
                 >
-                    <CompoundSearchModal editor={editor} elements={elements} setElements={setElements} selectedElements={selectedElements} setSelectedElement={setSelectedElements}/>
+                    <CompoundSearchModal editor={editor} elements={elements} setElements={setElements} selectedElements={selectedElements} setSelectedElements={setSelectedElements}/>
                 </Dialog>
 
                 <p style={{ marginTop: '20px' }}>
