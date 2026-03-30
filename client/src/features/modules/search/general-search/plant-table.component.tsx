@@ -1,11 +1,19 @@
 import { DataTable } from "primereact/datatable"
 import { Column } from 'primereact/column';
 import { familyColumnTemplate, kingdomColumnTemplate, nameColumnTemplate, phylumColumnTemplate } from "./column-templates";
-import { ResultTableProps } from "./models/result-table-props";
+import {observer} from "mobx-react-lite";
+import { Instance } from "mobx-state-tree";
+import { Entity } from "../../../../stores/mobx/models/Entity";
+import { useContext } from "react";
+import { RootStoreContext } from "../../../../stores/mobx/root-store";
 
+interface PlantTableProps{
+    results: Instance<typeof Entity>[]
+}
 
-
-export const PlantTable = ({ results, selectedElements, setSelectedElements }: ResultTableProps) => {
+export const PlantTable:React.FC<PlantTableProps> = ({results}) => {
+    
+    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;   
 
 
     return (
@@ -14,11 +22,11 @@ export const PlantTable = ({ results, selectedElements, setSelectedElements }: R
             scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
-            selection={selectedElements}
+            selection={searchEntityStore.selectedEntities}
             sortField="name"
             sortOrder={1}
             emptyMessage="No entries found... Try again!"
-            onSelectionChange={(e) => setSelectedElements(e.value)}
+            onSelectionChange={(e) => searchEntityStore.setSelectedEntities(e.value)}
             value={results}
             tableStyle={{ minWidth: '50rem' }}
         >
@@ -29,3 +37,4 @@ export const PlantTable = ({ results, selectedElements, setSelectedElements }: R
         </DataTable>
     )
 }
+export default observer(PlantTable);

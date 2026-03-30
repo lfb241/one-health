@@ -1,7 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import React from 'react';
 import {
-    CollectionPlaceholderComponent,
     LoadingPlaceholderComponent,
     PageTitle
 } from '../../../../components';
@@ -25,19 +24,16 @@ import { Dialog } from 'primereact/dialog';
 import OpenChemLib from 'openchemlib/full';
 import { SearchResultsPanel } from './search-results-table.component';
 import { IEntityDTO } from './models/entity-dto';
+import { RootStoreContext } from '../../../../stores/mobx/root-store';
+import {observer} from "mobx-react-lite";
 
 export const SearchPanel: React.FC = () => {
     const navigate = useNavigate();
 
-    const [query, setQuery] = useState<string>();
-    const [elements, setElements] = useState<IEntityDTO[]>([]);
-    const [selectedElements, setSelectedElements] = useState<IEntityDTO[]>([]);
+    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;   
+
     const [isModalOpen, setIsModalOpen] = useState<boolean | undefined>(false);
 
-
-    const searchService = dependencyFactory.get<IGeneralSearchService>(
-        SERVICES.IGeneralSearchService,
-    );
     const historyService = dependencyFactory.get<IGeneralSearchHistoryService>(
         SERVICES.IGeneralSearchHistoryService,
     );
@@ -49,11 +45,9 @@ export const SearchPanel: React.FC = () => {
         STORES.ITutorialStore,
     );
 
-
     const [history, setHistory] = useState<Partial<ISavedGeneralSearch>[]>([])
 
     const { messageService } = useContext(MessageServiceContext);
-    const [searching, setSearching] = useState<boolean | null>(null);
 
     const [runTutorial, setRunTutorial] = useState<boolean>(
         tutorialStore.getShowGeneralSearchTutorial(),
@@ -75,26 +69,7 @@ export const SearchPanel: React.FC = () => {
         setHistory(await historyService.getAllAsOptions(messageService!));
     };
 
-
-
-    const runQuery = async () => {
-        if ((!searching || searching === null) && query) {
-            setSearching(true);
-            const elements = await searchService.findEntities(
-                query,
-                messageService!,
-            );
-            setElements(elements);
-            setSelectedElements([]);
-            setSearching(false);
-            await historyService.create(
-                { id: '0', query: query, datetime: '', results: elements },
-                messageService!,
-            );
-            setHistory(await historyService.getAllAsOptions(messageService!));
-
-        }
-    };
+    const runQuery = async () => {searchEntityStore.fetchEntities()}
 
     const HistoryTokenList = (
         items: Partial<ISavedGeneralSearch>[],
@@ -106,7 +81,8 @@ export const SearchPanel: React.FC = () => {
                 {items.slice(0, 5).map((query, index) => (
                     <div className="token"
                         onClick={(e) => {
-                            setQuery(query.query);
+                            if(query.query)
+                            searchEntityStore.setQuery(query.query);
                         }}
                     >
                         <span className="mb-0">{query.query}</span>
@@ -191,10 +167,10 @@ export const SearchPanel: React.FC = () => {
                                     border: 'none',
                                     boxShadow: 'none',
                                 }}
-                                value={query}
-                                onChange={(e) => setQuery(e.target.value)}
+                                value={searchEntityStore.query}
+                                onChange={(e) => searchEntityStore.setQuery(e.target.value)}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') runQuery();
+                                    if (e.key === 'Enter') searchEntityStore.fetchEntities();
                                 }}
                                 placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
                             />
@@ -240,7 +216,7 @@ export const SearchPanel: React.FC = () => {
                     modal
                     style={{ width: '80%' }}
                 >
-                    <CompoundSearchModal editor={editor} elements={elements} setElements={setElements} selectedElements={selectedElements} setSelectedElements={setSelectedElements}/>
+                    <CompoundSearchModal editor={editor} elements={searchEntityStore.entities} selectedElements={searchEntityStore.selectedEntities} />
                 </Dialog>
 
                 <p style={{ marginTop: '20px' }}>
@@ -251,12 +227,12 @@ export const SearchPanel: React.FC = () => {
 
             </div>
             <div id='search-table'>
-                {searching &&( <LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
+                {searchEntityStore.isSearching &&( <LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
 
-                {searching === false &&(
+                {searchEntityStore.isSearching === false &&(
             
                     <div className='general-search-table'>
-                        <SearchResultsPanel results={elements} />
+                        <SearchResultsPanel />
 
                         <Button
                             icon="fa fa-compass"
@@ -266,7 +242,7 @@ export const SearchPanel: React.FC = () => {
                             onClick={() => {
                                 neighborhoodExplorerStore.nodes =
                                     neighborhoodExplorerStore.nodes.concat(
-                                        selectedElements.map((x) => {
+                                        searchEntityStore.selectedEntities.map((x) => {
                                             return {
                                                 data: {
                                                     id: x.id,
@@ -297,4 +273,4 @@ export const SearchPanel: React.FC = () => {
     )
 }
 
-export default SearchPanel;
+export default observer(SearchPanel);

@@ -13,7 +13,8 @@ import {
 } from 'primereact/fileupload';
 import { InputNumber } from 'primereact/inputnumber';
 import { Slider } from 'primereact/slider';
-import { IEntityDTO } from '../general-search/models/entity-dto';
+import { Instance } from 'mobx-state-tree';
+import { Entity } from '../../../../stores/mobx/models/Entity';
 
 export interface CompoundSearchQuery {
     value?: string;
@@ -31,10 +32,8 @@ export interface ExactSearchQuery {
 
 interface CompoundSearchModalProps {
     editor?: any;  
-    elements: IEntityDTO[];
-    setElements: Dispatch<SetStateAction<IEntityDTO[]>>
-    selectedElements: IEntityDTO[];
-    setSelectedElements: Dispatch<SetStateAction<IEntityDTO[]>>
+    elements: Instance<typeof Entity>[]
+    selectedElements: Instance<typeof Entity>[];
 }
 
 export const CompoundSearchModal: React.FC<CompoundSearchModalProps> = ({editor}) => {
