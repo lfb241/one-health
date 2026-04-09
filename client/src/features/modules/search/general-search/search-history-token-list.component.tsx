@@ -8,12 +8,13 @@ const HistoryTokenList = () => {
 
     const searchEntityStore = useContext(RootStoreContext).searchEntityStore;
 
-    if (!searchEntityStore.getHistoryAsJSON|| searchEntityStore.getHistorySize() == 0) return undefined
+    if (!searchEntityStore.getHistoryAsJSON || searchEntityStore.getHistorySize() === 0) return null;
+
     return (
 
         <div className='token-list'>
             {searchEntityStore.getHistoryAsJSON().slice(0, 5).map((item) => (
-                <div className="token"
+                <div key={item.id} className="token"
                     onClick={(e) => {
                         if (item.query)
                             searchEntityStore.setQuery(item.query);

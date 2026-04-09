@@ -104,7 +104,7 @@ export const SearchPanel: React.FC = () => {
                     <div style={{ display: 'flex' }}>
                         <div className="p-inputgroup general-search-header-input">
 
-                           {/*  <HistoryTokenList/> */}
+                            <HistoryTokenList/>
 
                             <InputText
                                 style={{

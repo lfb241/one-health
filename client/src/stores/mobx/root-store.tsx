@@ -3,12 +3,10 @@ import React from "react";
 import { SearchEntityStore } from "./search-entity-store";
 import { dependencyFactory } from "../../features/shared/injection";
 import { SERVICES } from "../../services";
-import { SearchHistoryStore } from "./search-history.store";
 
 export const RootStore = types
     .model({
         searchEntityStore: types.optional(SearchEntityStore,{}),
-        SearchHistoryStore: types.optional(SearchHistoryStore,{})
       
       })
     .actions((self) => ({

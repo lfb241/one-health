@@ -18,7 +18,7 @@ export const SearchEntityStore = types.model({
     entities: types.array(Entity),  // optional?
     selectedEntities: types.array(Entity),
     isSearching: types.maybeNull(types.boolean),
-    query: types.maybeNull(types.string),
+    query: types.optional(types.string, ""),
     history: types.array(SavedTextSearch),
     isModalOpen: types.optional(types.boolean, false)
 }).views(
@@ -111,10 +111,10 @@ export const SearchEntityStore = types.model({
 
                 if (item.id != undefined)
                     yield historyService.delete(item.id);
-                history = (
+                self.history = (
                     yield historyService.getAllAsOptions(
                         messageService!,
-                    ));
+                    ))
 
 
             })
