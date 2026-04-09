@@ -4,6 +4,7 @@ import { useContext, useState } from 'react';
 import { PlantTable } from './plant-table.component';
 import { DiseaseTable } from './disease-table.component';
 import { RootStoreContext } from '../../../../stores/mobx/root-store';
+import { observer } from "mobx-react-lite";
 
 
 export const SearchResultsPanel: React.FC = () => {
@@ -32,3 +33,5 @@ export const SearchResultsPanel: React.FC = () => {
             <DiseaseTable results={diseases} />     </TabPanel>
     </TabView>
 }
+
+export default observer(SearchResultsPanel)

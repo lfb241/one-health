@@ -9,9 +9,7 @@ import { InputText } from 'primereact/inputtext';
 import { MessageServiceContext } from '../../../shared/messages';
 import { dependencyFactory } from '../../../shared/injection';
 import {
-    IGeneralSearchHistoryService,
-    IGeneralSearchService,
-    SERVICES,
+    IGeneralSearchHistoryService, SERVICES
 } from '../../../../services';
 import { ISavedGeneralSearch } from '../search-history/saved-general-search';
 import { INeighborhoodExplorerStore } from '../../../../stores/neighborhood-explorer-store';
@@ -23,20 +21,16 @@ import CompoundSearchModal from '../compound-search/compound-search-modal';
 import { Dialog } from 'primereact/dialog';
 import OpenChemLib from 'openchemlib/full';
 import { SearchResultsPanel } from './search-results-table.component';
-import { IEntityDTO } from './models/entity-dto';
 import { RootStoreContext } from '../../../../stores/mobx/root-store';
-import {observer} from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
+import HistoryTokenList from './search-history-token-list.component';
 
 export const SearchPanel: React.FC = () => {
     const navigate = useNavigate();
 
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;   
+    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;
 
-    const [isModalOpen, setIsModalOpen] = useState<boolean | undefined>(false);
 
-    const historyService = dependencyFactory.get<IGeneralSearchHistoryService>(
-        SERVICES.IGeneralSearchHistoryService,
-    );
     const neighborhoodExplorerStore =
         dependencyFactory.get<INeighborhoodExplorerStore>(
             STORES.INeighborhoodExplorerStore,
@@ -45,9 +39,6 @@ export const SearchPanel: React.FC = () => {
         STORES.ITutorialStore,
     );
 
-    const [history, setHistory] = useState<Partial<ISavedGeneralSearch>[]>([])
-
-    const { messageService } = useContext(MessageServiceContext);
 
     const [runTutorial, setRunTutorial] = useState<boolean>(
         tutorialStore.getShowGeneralSearchTutorial(),
@@ -59,60 +50,13 @@ export const SearchPanel: React.FC = () => {
 
     const helpTourCallback = () => {
         setRunTutorial(false);
-        initWidgets();
+        searchEntityStore.initHistory()
         tutorialStore.setShowGeneralSearchTutorial(false);
         // tutorialStore.setShowCoOccurrencesSummaryTutorial(false);
     };
 
 
-    const initWidgets = async () => {
-        setHistory(await historyService.getAllAsOptions(messageService!));
-    };
 
-    const runQuery = async () => {searchEntityStore.fetchEntities()}
-
-    const HistoryTokenList = (
-        items: Partial<ISavedGeneralSearch>[],
-    ) => {
-        if (!items || items.length === 0) return undefined
-        return (
-
-            <div className='token-list'>
-                {items.slice(0, 5).map((query, index) => (
-                    <div className="token"
-                        onClick={(e) => {
-                            if(query.query)
-                            searchEntityStore.setQuery(query.query);
-                        }}
-                    >
-                        <span className="mb-0">{query.query}</span>
-                        <Button
-                            className='token-button'
-                            text
-                            rounded
-                            size='small'
-                            icon="pi pi-times"
-                            onClick={async (e) => {
-                                e.stopPropagation();
-                                if (query.id != undefined)
-                                    await historyService.delete(query.id);
-                                setHistory(
-                                    await historyService.getAllAsOptions(
-                                        messageService!,
-                                    ),
-                                );
-                            }}
-                            pt={{ icon: { style: { color: 'black' } } }}
-                            tooltip="Remove from history"
-                            tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
-                        />
-                    </div>
-                ))}
-            </div>
-
-        )
-
-    }
 
     const [savedMolFile, setSavedMolFile] = useState<string | null>(null);
     const [editor, setEditor] = useState<any>(null);
@@ -123,7 +67,7 @@ export const SearchPanel: React.FC = () => {
             const mol = editor.getMolFile();
             setSavedMolFile(mol);
         }
-        setIsModalOpen(false);
+        searchEntityStore.setIsModalOpen(false);
     };
 
     const initEditor = () => {
@@ -140,8 +84,8 @@ export const SearchPanel: React.FC = () => {
     }
 
     useEffect(() => {
+        searchEntityStore.initHistory()
     });
-
 
     return (
 
@@ -160,7 +104,7 @@ export const SearchPanel: React.FC = () => {
                     <div style={{ display: 'flex' }}>
                         <div className="p-inputgroup general-search-header-input">
 
-                            {HistoryTokenList(history)}
+                           {/*  <HistoryTokenList/> */}
 
                             <InputText
                                 style={{
@@ -168,16 +112,19 @@ export const SearchPanel: React.FC = () => {
                                     boxShadow: 'none',
                                 }}
                                 value={searchEntityStore.query}
-                                onChange={(e) => searchEntityStore.setQuery(e.target.value)}
+                                onChange={(e) => {
+
+                                    searchEntityStore.setQuery(e.target.value)
+                                }}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') searchEntityStore.fetchEntities();
+                                    if (e.key === 'Enter') searchEntityStore.runQuery();
                                 }}
                                 placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
                             />
                             <Button
                                 icon="pi pi-search"
                                 className="p-button-rounded p-button-text"
-                                onClick={runQuery}
+                                onClick={(e) => searchEntityStore.runQuery()}
                                 tooltip="Search in knowledge base"
                                 tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
                             />
@@ -194,12 +141,14 @@ export const SearchPanel: React.FC = () => {
                         />
 
                     </div>
-                {/* TODO: implement as Buttons?*/}
+                    {/* TODO: implement as Buttons?*/}
                     <div className="general-search-links">
                         <Link to="/" className="general-search-link">
                             <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
                         </Link>
-                        <Link to="#" className="general-search-link" onClick={(e) => { e.preventDefault; setIsModalOpen(true) }}>
+                        <Link to="#" className="general-search-link" onClick={(e) => {
+                            e.preventDefault; searchEntityStore.setIsModalOpen(false);
+                        }}>
                             <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
                         </Link>
                         <Link to="/" className="general-search-link">
@@ -209,7 +158,7 @@ export const SearchPanel: React.FC = () => {
                     </div>
                 </div>
                 <Dialog
-                    visible={isModalOpen}
+                    visible={searchEntityStore.isModalOpen}
                     header={() => { return (<PageTitle icon="fa fa-atom" title="Compound Search" help={false} helpClickedHandler={helpClickedHandler} />) }}
                     onHide={handleHide}
                     onShow={initEditor}
@@ -227,10 +176,10 @@ export const SearchPanel: React.FC = () => {
 
             </div>
             <div id='search-table'>
-                {searchEntityStore.isSearching &&( <LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
+                {searchEntityStore.isSearching && (<LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
 
-                {searchEntityStore.isSearching === false &&(
-            
+                {searchEntityStore.isSearching === false && (
+
                     <div className='general-search-table'>
                         <SearchResultsPanel />
 

@@ -41,6 +41,8 @@ import {
     INeighborhoodExplorerStore,
     NeighborhoodExplorerStore,
 } from '../../../stores/neighborhood-explorer-store';
+import { ToastMessageService } from '../messages/toast-message-service';
+import { MessageService } from '../messages';
 
 const dependencyFactory = new Container();
 dependencyFactory
@@ -100,5 +102,9 @@ dependencyFactory
 dependencyFactory
     .bind<ILocalStorageStore>(STORES.ILocalStorageStore)
     .to(LocalStorageStore);
+dependencyFactory
+    .bind<MessageService>(SERVICES.MessageService)
+    .to(ToastMessageService)
+
 
 export { dependencyFactory };

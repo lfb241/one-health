@@ -9,6 +9,8 @@ import axios from 'axios';
 import { constructHttpParams } from '../../../../utils';
 import qs from 'qs';
 
+
+
 @injectable()
 export class IGeneralSearchService extends BaseDataService {
     findEntities(
@@ -35,13 +37,13 @@ export class GeneralSearchService extends IGeneralSearchService {
 
         return this.handleRequest<any>(
             axios.get<any>(`${this.url}`, {
-                            params: query,
-                            paramsSerializer: {
-                                serialize: (params: any) => {
-                                    return qs.stringify(params);
-                                },
-            },
-    }),
+                params: query,
+                paramsSerializer: {
+                    serialize: (params: any) => {
+                        return qs.stringify(params);
+                    },
+                },
+            }),
             new OnReadByIdResponsesHandler(
                 this.entityTitle,
                 messageService,

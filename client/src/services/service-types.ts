@@ -17,6 +17,7 @@ const SERVICES = {
     ICompoundService: Symbol.for('ICompoundService'),
     IGeneralSearchService: Symbol.for('IGeneralSearchService'),
     IGeneralSearchHistoryService: Symbol.for('IGeneralSearchHistoryService'),
+    MessageService: Symbol.for('MessageService')
 };
 
 export { SERVICES };

@@ -1,10 +1,9 @@
-import React, { ReactComponentElement, ReactElement } from 'react';
+import React, { ReactElement } from 'react';
 import { Card } from 'primereact/card';
 
 import './overview-card.component.scss';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { IconDefinition, faEnvelope } from '@fortawesome/free-solid-svg-icons';
-import { Button } from 'primereact/button';
+import { IconDefinition } from '@fortawesome/free-solid-svg-icons';
 
 interface OverviewCardProps {
     leftCount: number;

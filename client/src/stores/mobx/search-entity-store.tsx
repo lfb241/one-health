@@ -1,17 +1,26 @@
-import { types, flow, Instance } from "mobx-state-tree";
+import { types, flow, Instance, getEnv } from "mobx-state-tree";
 import { Entity } from "./models/Entity";
 import React from "react";
-import { IGeneralSearchService, SERVICES } from "../../services";
+import { IGeneralSearchHistoryService, IGeneralSearchService, SERVICES } from "../../services";
 import { dependencyFactory } from "../../features/shared/injection";
 import { ToastMessageService } from "../../features/shared/messages/toast-message-service";
 import { Toast } from "primereact/toast";
+import { MessageService } from "../../features/shared/messages";
+import { SavedTextSearch } from "./models/SavedTextSearch";
+
+type Env = {
+    historyService: IGeneralSearchHistoryService;
+    messageService: MessageService
+    searchService: IGeneralSearchService
+}
 
 export const SearchEntityStore = types.model({
     entities: types.array(Entity),  // optional?
     selectedEntities: types.array(Entity),
     isSearching: types.maybeNull(types.boolean),
     query: types.maybeNull(types.string),
-    history: types.array(types.string)
+    history: types.array(SavedTextSearch),
+    isModalOpen: types.optional(types.boolean, false)
 }).views(
     (self) => ({
         getEntitiesAsJSON() {
@@ -31,8 +40,21 @@ export const SearchEntityStore = types.model({
         },
         getEntitiesOfType(type: string) {
             return self.entities.filter(e => e.type == type);
-        }
+        },
+        getHistorySize() {
+            return self.history.length;
+        },
+        getHistoryAsJSON() {
+            return self.history.map((e) => {
+                return {
+                    id: e.id,
+                    datetime: e.datetime,
+                    query: e.query,
+                    results: e.results
+                }
+            })
 
+        }
 
     }))
     .actions(
@@ -48,27 +70,52 @@ export const SearchEntityStore = types.model({
             setSelectedEntities(entities: Instance<typeof Entity>[]): void {
                 self.selectedEntities.replace(entities);
             },
+            setIsModalOpen(isModalOpen: boolean): void {
+                self.isModalOpen = isModalOpen;
+
+            },
+
+            initHistory: flow(function* () {
+                const { historyService, messageService } = getEnv<Env>(self);
+                const data = yield historyService.getAllAsOptions(messageService);
+                self.history = data;
+
+            }),
+            setHistory(history: Instance<typeof SavedTextSearch>[]): void {
+                self.history.replace(history);
+            },
 
 
-            fetchEntities: flow(function* (): any {
-
-                const searchService = dependencyFactory.get<IGeneralSearchService>(
-                    SERVICES.IGeneralSearchService,
-                );
-
-                const toastRef = React.createRef<Toast>();
-                const messageService = new ToastMessageService(toastRef);
+            runQuery: flow(function* (): any {
+                const { searchService, messageService, historyService } = getEnv<Env>(self);
 
                 if (!self.isSearching && self.query) {
                     self.isSearching = true
                     const entities = yield searchService.findEntities(
                         self.query,
-                        messageService
+                        messageService!,
                     );
                     self.entities.replace(entities)
                     self.selectedEntities.replace([])
                     self.isSearching = false;
+                    yield historyService.create(
+                        { id: '0', query: self.query, datetime: '', results: self.entities },
+                        messageService!,)
+
+                    self.history = yield historyService.getAllAsOptions(messageService!)
                 }
+
+            }),
+            deleteHistoryItem: flow(function* (item: Instance<typeof SavedTextSearch>): any {
+                const { messageService, historyService } = getEnv<Env>(self);
+
+                if (item.id != undefined)
+                    yield historyService.delete(item.id);
+                history = (
+                    yield historyService.getAllAsOptions(
+                        messageService!,
+                    ));
+
 
             })
 
@@ -77,23 +124,3 @@ export const SearchEntityStore = types.model({
     )
 
 export const SearchEntityStoreContext = React.createContext(SearchEntityStore.create({}))
-
-
-/* const runQuery = async () => {
-    if ((!searching || searching === null) && query) {
-        setSearching(true);
-        const elements = await searchService.findEntities(
-            query,
-            messageService!,
-        );
-        setElements(elements);
-        setSelectedElements([]);
-        setSearching(false);
-        await historyService.create(
-            { id: '0', query: query, datetime: '', results: elements },
-            messageService!,
-        );
-        setHistory(await historyService.getAllAsOptions(messageService!));
-
-    }
-}; */

@@ -7,6 +7,7 @@ import './home-page.component.scss';
 import React from 'react';
 import HeroSectionRow from './hero-section-row.component';
 import SearchPanel from '../../features/modules/search/general-search/search-panel.component';
+import { observer } from "mobx-react-lite";
 
 const HomePageComponent: React.FC = () => {
 
@@ -101,4 +102,4 @@ const HomePageComponent: React.FC = () => {
 
 
 
-export default HomePageComponent;
+export default observer(HomePageComponent);
