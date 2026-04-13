@@ -1,7 +1,6 @@
 import { DataTable } from "primereact/datatable";
 import { Column } from 'primereact/column';
 import { classificationColumnTemplate, nameColumnTemplate } from "./column-templates";
-import { ResultTableProps } from "./models/result-table-props";
 import { Instance } from "mobx-state-tree";
 import { Entity } from "../../../../stores/mobx/models/Entity";
 import { RootStoreContext } from "../../../../stores/mobx/root-store";
@@ -13,9 +12,9 @@ interface DiseaseTableProps{
 }
 
 
-export const DiseaseTable:React.FC<DiseaseTableProps> = ({results}) => {
+const DiseaseTable:React.FC<DiseaseTableProps> = ({results}) => {
     
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;   
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;   
 
 
 
@@ -25,11 +24,11 @@ export const DiseaseTable:React.FC<DiseaseTableProps> = ({results}) => {
             scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
-            selection={searchEntityStore.selectedEntities}
+            selection={generalSearchStore.getSelectionAsJSON()}
             sortField="name"
             sortOrder={1}
             emptyMessage="No entries found... Try again!"
-            onSelectionChange={(e) => searchEntityStore.setSelectedEntities(e.value)}
+            onSelectionChange={(e) => generalSearchStore.setSelectedEntities(e.value)}
             value={results}
             tableStyle={{ minWidth: '50rem' }}
         >

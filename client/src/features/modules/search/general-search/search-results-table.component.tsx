@@ -1,20 +1,20 @@
 import { TabView, TabPanel } from 'primereact/tabview';
-import { NaturalProductTable } from './natural-product-table.component';
+import  NaturalProductTable  from './natural-product-table.component';
 import { useContext, useState } from 'react';
-import { PlantTable } from './plant-table.component';
-import { DiseaseTable } from './disease-table.component';
+import  PlantTable  from './plant-table.component';
+import  DiseaseTable from './disease-table.component';
 import { RootStoreContext } from '../../../../stores/mobx/root-store';
 import { observer } from "mobx-react-lite";
 
 
-export const SearchResultsPanel: React.FC = () => {
+const SearchResultsPanel: React.FC = () => {
 
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
 
 
-    const naturalProducts = searchEntityStore.getEntitiesOfType("Natural Product");
-    const plants = searchEntityStore.getEntitiesOfType("Plant");
-    const diseases = searchEntityStore.getEntitiesOfType("Disease");
+    const naturalProducts = generalSearchStore.getEntitiesOfType("Natural Product");
+    const plants = generalSearchStore.getEntitiesOfType("Plant");
+    const diseases = generalSearchStore.getEntitiesOfType("Disease");
 
     const maxResultsIndex = [naturalProducts.length, plants.length, diseases.length]
         .reduce((maxValueIndex, currentValue, currentIndex, arr) => currentValue > arr[maxValueIndex] ? currentIndex : maxValueIndex, 0)

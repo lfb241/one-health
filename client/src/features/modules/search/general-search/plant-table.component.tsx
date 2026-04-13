@@ -11,9 +11,9 @@ interface PlantTableProps{
     results: Instance<typeof Entity>[]
 }
 
-export const PlantTable:React.FC<PlantTableProps> = ({results}) => {
+const PlantTable:React.FC<PlantTableProps> = ({results}) => {
     
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;   
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;   
 
 
     return (
@@ -22,11 +22,11 @@ export const PlantTable:React.FC<PlantTableProps> = ({results}) => {
             scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
-            selection={searchEntityStore.selectedEntities}
+            selection={generalSearchStore.getSelectionAsJSON()}
             sortField="name"
             sortOrder={1}
             emptyMessage="No entries found... Try again!"
-            onSelectionChange={(e) => searchEntityStore.setSelectedEntities(e.value)}
+            onSelectionChange={(e) => generalSearchStore.setSelectedEntities(e.value)}
             value={results}
             tableStyle={{ minWidth: '50rem' }}
         >

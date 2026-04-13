@@ -6,18 +6,18 @@ import { observer } from "mobx-react-lite";
 
 const HistoryTokenList = () => {
 
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
 
-    if (!searchEntityStore.getHistoryAsJSON || searchEntityStore.getHistorySize() === 0) return null;
+    if (!generalSearchStore.getHistoryAsJSON || generalSearchStore.getHistorySize() === 0) return null;
 
     return (
 
         <div className='token-list'>
-            {searchEntityStore.getHistoryAsJSON().slice(0, 5).map((item) => (
+            {generalSearchStore.getHistoryAsJSON().slice(0, 5).map((item) => (
                 <div key={item.id} className="token"
                     onClick={(e) => {
                         if (item.query)
-                            searchEntityStore.setQuery(item.query);
+                            generalSearchStore.setQuery(item.query);
                     }}
                 >
                     <span className="mb-0">{item.query}</span>
@@ -29,7 +29,7 @@ const HistoryTokenList = () => {
                         icon="pi pi-times"
                         onClick={async (e) => {
                             e.stopPropagation();
-                            searchEntityStore.deleteHistoryItem(item)
+                            generalSearchStore.deleteHistoryItem(item)
                         }}
                         pt={{ icon: { style: { color: 'black' } } }}
                         tooltip="Remove from history"

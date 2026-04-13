@@ -1,10 +1,7 @@
-import { types, flow, Instance, getEnv } from "mobx-state-tree";
+import { types, flow, Instance, getEnv, getSnapshot } from "mobx-state-tree";
 import { Entity } from "./models/Entity";
 import React from "react";
-import { IGeneralSearchHistoryService, IGeneralSearchService, SERVICES } from "../../services";
-import { dependencyFactory } from "../../features/shared/injection";
-import { ToastMessageService } from "../../features/shared/messages/toast-message-service";
-import { Toast } from "primereact/toast";
+import { IGeneralSearchHistoryService, IGeneralSearchService } from "../../services";
 import { MessageService } from "../../features/shared/messages";
 import { SavedTextSearch } from "./models/SavedTextSearch";
 
@@ -14,9 +11,9 @@ type Env = {
     searchService: IGeneralSearchService
 }
 
-export const SearchEntityStore = types.model({
+export const GeneralSearchStore = types.model({
     entities: types.array(Entity),  // optional?
-    selectedEntities: types.array(Entity),
+    selectedEntities: types.array(types.reference(Entity)),
     isSearching: types.maybeNull(types.boolean),
     query: types.optional(types.string, ""),
     history: types.array(SavedTextSearch),
@@ -24,19 +21,11 @@ export const SearchEntityStore = types.model({
 }).views(
     (self) => ({
         getEntitiesAsJSON() {
-            return self.entities.map((entity) => {
-                return {
-                    id: entity.id,
-                    type: entity.type,
-                    labels: entity.labels,
-                    properties: entity.properties,
-                    references: entity.references,
-                    synonyms: entity.synonyms,
-                    color: entity.color,
-                    name: entity.name,
-
-                }
-            })
+            return self.entities.map((entity) => getSnapshot(entity))
+        }
+        ,
+        getSelectionAsJSON(): any {
+            return self.selectedEntities.map((entity) => getSnapshot(entity))
         },
         getEntitiesOfType(type: string) {
             return self.entities.filter(e => e.type == type);
@@ -67,9 +56,17 @@ export const SearchEntityStore = types.model({
                 self.query = query;
             },
 
-            setSelectedEntities(entities: Instance<typeof Entity>[]): void {
-                self.selectedEntities.replace(entities);
+            setSelectedEntities(entities: any[]) {
+
+                self.selectedEntities.clear()
+                entities.forEach(propEntity => {
+                    if (propEntity.id) {
+                        self.selectedEntities.push(propEntity.id)
+                    }
+                })
+
             },
+
             setIsModalOpen(isModalOpen: boolean): void {
                 self.isModalOpen = isModalOpen;
 
@@ -104,6 +101,7 @@ export const SearchEntityStore = types.model({
 
                     self.history = yield historyService.getAllAsOptions(messageService!)
                 }
+                self.selectedEntities.clear();
 
             }),
             deleteHistoryItem: flow(function* (item: Instance<typeof SavedTextSearch>): any {
@@ -123,4 +121,4 @@ export const SearchEntityStore = types.model({
 
     )
 
-export const SearchEntityStoreContext = React.createContext(SearchEntityStore.create({}))
+export const GeneralSearchStoreContext = React.createContext(GeneralSearchStore.create({}))

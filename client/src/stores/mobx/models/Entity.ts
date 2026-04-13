@@ -5,7 +5,7 @@ import { Reference } from "./Reference";
 
 
 export const Entity = types.model({
-    id: types.string,
+    id: types.identifier,
     type: types.string,
     labels: types.array(types.string),
     properties: types.array(Property),

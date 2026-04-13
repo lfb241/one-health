@@ -20,15 +20,15 @@ import './general-search.component.scss';
 import CompoundSearchModal from '../compound-search/compound-search-modal';
 import { Dialog } from 'primereact/dialog';
 import OpenChemLib from 'openchemlib/full';
-import { SearchResultsPanel } from './search-results-table.component';
+import  SearchResultsPanel from './search-results-table.component';
 import { RootStoreContext } from '../../../../stores/mobx/root-store';
 import { observer } from "mobx-react-lite";
 import HistoryTokenList from './search-history-token-list.component';
 
-export const SearchPanel: React.FC = () => {
+ const SearchPanel: React.FC = () => {
     const navigate = useNavigate();
 
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
 
 
     const neighborhoodExplorerStore =
@@ -50,7 +50,7 @@ export const SearchPanel: React.FC = () => {
 
     const helpTourCallback = () => {
         setRunTutorial(false);
-        searchEntityStore.initHistory()
+        generalSearchStore.initHistory()
         tutorialStore.setShowGeneralSearchTutorial(false);
         // tutorialStore.setShowCoOccurrencesSummaryTutorial(false);
     };
@@ -67,7 +67,7 @@ export const SearchPanel: React.FC = () => {
             const mol = editor.getMolFile();
             setSavedMolFile(mol);
         }
-        searchEntityStore.setIsModalOpen(false);
+        generalSearchStore.setIsModalOpen(false);
     };
 
     const initEditor = () => {
@@ -84,7 +84,7 @@ export const SearchPanel: React.FC = () => {
     }
 
     useEffect(() => {
-        searchEntityStore.initHistory()
+        generalSearchStore.initHistory()
     });
 
     return (
@@ -111,20 +111,20 @@ export const SearchPanel: React.FC = () => {
                                     border: 'none',
                                     boxShadow: 'none',
                                 }}
-                                value={searchEntityStore.query}
+                                value={generalSearchStore.query}
                                 onChange={(e) => {
 
-                                    searchEntityStore.setQuery(e.target.value)
+                                    generalSearchStore.setQuery(e.target.value)
                                 }}
                                 onKeyDown={(e) => {
-                                    if (e.key === 'Enter') searchEntityStore.runQuery();
+                                    if (e.key === 'Enter') generalSearchStore.runQuery();
                                 }}
                                 placeholder="Search in knowledge base (e.g. disease name, plant name, compound name, InChI key, ...)"
                             />
                             <Button
                                 icon="pi pi-search"
                                 className="p-button-rounded p-button-text"
-                                onClick={(e) => searchEntityStore.runQuery()}
+                                onClick={(e) => generalSearchStore.runQuery()}
                                 tooltip="Search in knowledge base"
                                 tooltipOptions={{ position: 'bottom', showDelay: 1000 }}
                             />
@@ -147,7 +147,7 @@ export const SearchPanel: React.FC = () => {
                             <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
                         </Link>
                         <Link to="#" className="general-search-link" onClick={(e) => {
-                            e.preventDefault; searchEntityStore.setIsModalOpen(false);
+                            e.preventDefault; generalSearchStore.setIsModalOpen(false);
                         }}>
                             <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
                         </Link>
@@ -158,14 +158,14 @@ export const SearchPanel: React.FC = () => {
                     </div>
                 </div>
                 <Dialog
-                    visible={searchEntityStore.isModalOpen}
+                    visible={generalSearchStore.isModalOpen}
                     header={() => { return (<PageTitle icon="fa fa-atom" title="Compound Search" help={false} helpClickedHandler={helpClickedHandler} />) }}
                     onHide={handleHide}
                     onShow={initEditor}
                     modal
                     style={{ width: '80%' }}
                 >
-                    <CompoundSearchModal editor={editor} elements={searchEntityStore.entities} selectedElements={searchEntityStore.selectedEntities} />
+                    <CompoundSearchModal editor={editor} elements={generalSearchStore.entities} selectedElements={generalSearchStore.selectedEntities} />
                 </Dialog>
 
                 <p style={{ marginTop: '20px' }}>
@@ -176,9 +176,9 @@ export const SearchPanel: React.FC = () => {
 
             </div>
             <div id='search-table'>
-                {searchEntityStore.isSearching && (<LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
+                {generalSearchStore.isSearching && (<LoadingPlaceholderComponent></LoadingPlaceholderComponent>)}
 
-                {searchEntityStore.isSearching === false && (
+                {generalSearchStore.isSearching === false && (
 
                     <div className='general-search-table'>
                         <SearchResultsPanel />
@@ -191,7 +191,7 @@ export const SearchPanel: React.FC = () => {
                             onClick={() => {
                                 neighborhoodExplorerStore.nodes =
                                     neighborhoodExplorerStore.nodes.concat(
-                                        searchEntityStore.selectedEntities.map((x) => {
+                                        generalSearchStore.selectedEntities.map((x) => {
                                             return {
                                                 data: {
                                                     id: x.id,

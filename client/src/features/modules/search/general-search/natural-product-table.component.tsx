@@ -12,10 +12,9 @@ interface NaturalProductTableProps{
     results: Instance<typeof Entity>[]
 }
 
-export const NaturalProductTable:React.FC<NaturalProductTableProps> = ({results}) => {
+const NaturalProductTable:React.FC<NaturalProductTableProps> = ({results}) => {
     
-    const searchEntityStore = useContext(RootStoreContext).searchEntityStore;   
-
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;   
 
     return (
         <DataTable
@@ -23,11 +22,11 @@ export const NaturalProductTable:React.FC<NaturalProductTableProps> = ({results}
             scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
-            selection={searchEntityStore.selectedEntities}
+            selection={generalSearchStore.getSelectionAsJSON()}
             sortField="name"
             sortOrder={1}
             emptyMessage="No entries found... Try again!"
-            onSelectionChange={(e) => searchEntityStore.setSelectedEntities(e.value)}
+            onSelectionChange={(e) => generalSearchStore.setSelectedEntities(e.value)}
             value={results}
             tableStyle={{ minWidth: '50rem' }}
         >
