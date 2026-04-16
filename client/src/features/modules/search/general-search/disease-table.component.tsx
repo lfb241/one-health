@@ -20,8 +20,6 @@ const DiseaseTable:React.FC<DiseaseTableProps> = ({results}) => {
 
     return (
         <DataTable
-            scrollable
-            scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
             selection={generalSearchStore.getSelectionAsJSON()}

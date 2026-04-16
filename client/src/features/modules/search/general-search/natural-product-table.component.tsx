@@ -4,22 +4,20 @@ import { nameColumnTemplate, smilesColumnTemplate, structureDrawTemplate, weight
 import { useContext } from "react";
 import { RootStoreContext } from "../../../../stores/mobx/root-store";
 
-import {observer} from "mobx-react-lite";
+import { observer } from "mobx-react-lite";
 import { Entity } from "../../../../stores/mobx/models/Entity";
 import { Instance } from "mobx-state-tree";
 
-interface NaturalProductTableProps{
+interface NaturalProductTableProps {
     results: Instance<typeof Entity>[]
 }
 
-const NaturalProductTable:React.FC<NaturalProductTableProps> = ({results}) => {
-    
-    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;   
+const NaturalProductTable: React.FC<NaturalProductTableProps> = ({ results }) => {
+
+    const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
 
     return (
         <DataTable
-            scrollable
-            scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
             selection={generalSearchStore.getSelectionAsJSON()}

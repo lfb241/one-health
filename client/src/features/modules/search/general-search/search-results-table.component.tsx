@@ -1,15 +1,18 @@
 import { TabView, TabPanel } from 'primereact/tabview';
-import  NaturalProductTable  from './natural-product-table.component';
+import NaturalProductTable from './natural-product-table.component';
 import { useContext, useState } from 'react';
-import  PlantTable  from './plant-table.component';
-import  DiseaseTable from './disease-table.component';
+import PlantTable from './plant-table.component';
+import DiseaseTable from './disease-table.component';
 import { RootStoreContext } from '../../../../stores/mobx/root-store';
 import { observer } from "mobx-react-lite";
+import VisualizeButton from './visualize-button.component';
+
 
 
 const SearchResultsPanel: React.FC = () => {
 
     const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
+
 
 
     const naturalProducts = generalSearchStore.getEntitiesOfType("Natural Product");
@@ -23,15 +26,32 @@ const SearchResultsPanel: React.FC = () => {
 
 
 
-    return <TabView activeIndex={activeIndex} onTabChange={(e) => setActiveIndex(e.index)}>
-        <TabPanel header={"Natural Products (" + naturalProducts.length + ")"} >
-            <NaturalProductTable results={naturalProducts} />
-        </TabPanel>
-        < TabPanel header={"Plants (" + plants.length + ")"} >
-            <PlantTable results={plants} />     </TabPanel>
-        < TabPanel header={"Diseases (" + diseases.length + ")"} >
-            <DiseaseTable results={diseases} />     </TabPanel>
-    </TabView>
+    return (
+
+        <TabView
+            pt={{ panelContainer: { style: { padding: "0rem" } } }}
+            style={{ position: "relative" }}
+            renderActiveOnly={false}
+            activeIndex={activeIndex}
+            onTabChange={(e) => setActiveIndex(e.index)}
+        >
+            <TabPanel header={"Natural Products (" + naturalProducts.length + ")"}>
+                <NaturalProductTable results={naturalProducts} />
+                <VisualizeButton />
+            </TabPanel>
+
+            < TabPanel header={"Plants (" + plants.length + ")"}>
+                <PlantTable results={plants} />
+                <VisualizeButton />
+            </TabPanel>
+
+            < TabPanel header={"Diseases (" + diseases.length + ")"} >
+                <DiseaseTable results={diseases} />
+                <VisualizeButton />       
+            </TabPanel>
+            
+        </TabView>
+    )
 }
 
 export default observer(SearchResultsPanel)

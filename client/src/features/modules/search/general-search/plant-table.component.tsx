@@ -18,8 +18,6 @@ const PlantTable:React.FC<PlantTableProps> = ({results}) => {
 
     return (
         <DataTable
-            scrollable
-            scrollHeight="650px"
             metaKeySelection={false}
             selectionMode="multiple"
             selection={generalSearchStore.getSelectionAsJSON()}
