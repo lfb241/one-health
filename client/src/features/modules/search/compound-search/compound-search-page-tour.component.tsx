@@ -1,10 +1,9 @@
 import Joyride, { CallBackProps, STATUS, Step } from 'react-joyride';
 import React from 'react';
-import compoundDrawGif from '../../../assets/tutorials/search/compound-search/compound_search_draw.gif';
-import compoundImportGif from '../../../assets/tutorials/search/compound-search/compound_search_import.gif';
-import compoundExactGif from '../../../assets/tutorials/search/compound-search/compound_search_exact.gif';
-import compoundNeighborhoodGif from '../../../assets/tutorials/search/compound-search/compound_search_to_neighborhood.gif';
-
+import compoundDrawGif from '../../../../assets/tutorials/search/compound-search/compound_search_draw.gif';
+import compoundImportGif from '../../../../assets/tutorials/search/compound-search/compound_search_import.gif';
+import compoundExactGif from '../../../../assets/tutorials/search/compound-search/compound_search_exact.gif';
+import compoundNeighborhoodGif from '../../../../assets/tutorials/search/compound-search/compound_search_to_neighborhood.gif';
 interface CompoundSearchPageTourProps {
     run: boolean;
     callback: any;

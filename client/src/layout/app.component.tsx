@@ -15,6 +15,7 @@ import {
 } from '../pages';
 import { RootStoreContext } from '../stores/mobx/root-store';
 import { useContext } from 'react';
+import CompoundSearchPageComponent from '../features/modules/search/compound-search/compound-search-page.component';
 
 
 function App() {
@@ -54,9 +55,7 @@ function App() {
                     <Route path="ontology/overview" element={<MetadataOverviewPageComponent />} />
                     <Route path="ontology/data-load/0" element={<DataLoadPageComponent />} />
 
-                    {/*                     <Route path="search/structure-search" element={<CompoundSearchPageComponent />} />
-                    <Route path="search/general-search" element={<GeneralSearchPageComponent />} />
- */}
+                    <Route path="search/structure-search" element={<CompoundSearchPageComponent />} />
                     <Route path="neighborhood-explorer" element={<NeighborhoodExplorerPageComponent />} />
                     <Route path="visualization/co-occurrence-search" element={<CoOcurrencesSummaryPageComponent />} />
 
