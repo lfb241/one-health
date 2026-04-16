@@ -1,43 +1,34 @@
-import { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useRef, useState } from 'react';
 import React from 'react';
 import {
-    LoadingPlaceholderComponent,
-    PageTitle
+    LoadingPlaceholderComponent
 } from '../../../../components';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { MessageServiceContext } from '../../../shared/messages';
 import { dependencyFactory } from '../../../shared/injection';
-import {
-    IGeneralSearchHistoryService, SERVICES
-} from '../../../../services';
-import { ISavedGeneralSearch } from '../search-history/saved-general-search';
-import { INeighborhoodExplorerStore } from '../../../../stores/neighborhood-explorer-store';
+import { SERVICES } from '../../../../services';
 import { ITutorialStore, STORES } from '../../../../stores';
-import { useNavigate, Link } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import GeneralSearchPageTourComponent from './general-search-tour.component';
 import './general-search.component.scss';
-import CompoundSearchModal from '../compound-search/compound-search-modal';
-import { Dialog } from 'primereact/dialog';
-import OpenChemLib from 'openchemlib/full';
-import  SearchResultsPanel from './search-results-table.component';
+import SearchResultsPanel from './search-results-table.component';
 import { RootStoreContext } from '../../../../stores/mobx/root-store';
 import { observer } from "mobx-react-lite";
 import HistoryTokenList from './search-history-token-list.component';
+import { MessageService } from '../../../shared/messages';
+import { Toast } from 'primereact/toast';
+import HistoryModal from './search-history-modal.component';
 
- const SearchPanel: React.FC = () => {
-    const navigate = useNavigate();
+const SearchPanel: React.FC = () => {
 
     const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
+    const historySearchStore = useContext(RootStoreContext).historySearchStore;
 
-
-    const neighborhoodExplorerStore =
-        dependencyFactory.get<INeighborhoodExplorerStore>(
-            STORES.INeighborhoodExplorerStore,
-        );
     const tutorialStore = dependencyFactory.get<ITutorialStore>(
         STORES.ITutorialStore,
     );
+
+    const [historyVisible, setHistoryVisible] = useState<boolean>(false)
 
 
     const [runTutorial, setRunTutorial] = useState<boolean>(
@@ -50,14 +41,15 @@ import HistoryTokenList from './search-history-token-list.component';
 
     const helpTourCallback = () => {
         setRunTutorial(false);
-        generalSearchStore.initHistory()
+        historySearchStore.initHistory()
         tutorialStore.setShowGeneralSearchTutorial(false);
         // tutorialStore.setShowCoOccurrencesSummaryTutorial(false);
     };
 
 
 
-
+/* ### UNDER CONSTRUCTION ### 
+   ### integration of component-search-modal in search panel ### 
     const [savedMolFile, setSavedMolFile] = useState<string | null>(null);
     const [editor, setEditor] = useState<any>(null);
 
@@ -81,10 +73,14 @@ import HistoryTokenList from './search-history-token-list.component';
         }
 
         setEditor(newEditor);
-    }
+    } */
 
+
+    const toast = useRef(null);
+    // TODO: maybe reduntant because usage ob observer in history-related components?
     useEffect(() => {
-        generalSearchStore.initHistory()
+        console.log("History initialized")
+        historySearchStore.initHistory()
     });
 
     return (
@@ -104,7 +100,7 @@ import HistoryTokenList from './search-history-token-list.component';
                     <div style={{ display: 'flex' }}>
                         <div className="p-inputgroup general-search-header-input">
 
-                            <HistoryTokenList/>
+                            <HistoryTokenList />
 
                             <InputText
                                 style={{
@@ -141,33 +137,34 @@ import HistoryTokenList from './search-history-token-list.component';
                         />
 
                     </div>
+
+
                     {/* TODO: implement as Buttons?*/}
                     <div className="general-search-links">
-                        <Link to="/" className="general-search-link">
-                            <i className="pi pi-angle-down" style={{ fontSize: '1rem' }}></i>Advanced Search
+                        <Toast ref={toast} />
+
+                        <Link to="/" className="general-search-link" onClick={() => {
+                            toast.current.show({ severity: "warn", summary: 'Feature unavailable', detail: 'This feature is currently under development.' })
+
+                        }}
+                        >
+                            <i className="pi pi-angle-down" style={{ fontSize: '1rem' }} ></i>Advanced Search
                         </Link>
-                        <Link to="#" className="general-search-link" onClick={(e) => {
-                            e.preventDefault; generalSearchStore.setIsModalOpen(false);
-                        }}>
+                        <Link to="/search/structure-search" className="general-search-link" >
                             <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
                         </Link>
-                        <Link to="/" className="general-search-link">
+                        <Link to="/" className="general-search-link" onClick={() => {
+                            setHistoryVisible(true)
+                        }}>
+
                             <i className="pi pi-history" style={{ fontSize: '1rem' }}></i> Search History
                         </Link>
-                        {/* more links can be added here */}
+                        <HistoryModal
+                            visible={historyVisible}
+                            onHide={() => setHistoryVisible(false)}
+                        />
                     </div>
                 </div>
-                <Dialog
-                    visible={generalSearchStore.isModalOpen}
-                    header={() => { return (<PageTitle icon="fa fa-atom" title="Compound Search" help={false} helpClickedHandler={helpClickedHandler} />) }}
-                    onHide={handleHide}
-                    onShow={initEditor}
-                    modal
-                    style={{ width: '80%' }}
-                >
-                    <CompoundSearchModal editor={editor} elements={generalSearchStore.entities} selectedElements={generalSearchStore.selectedEntities} />
-                </Dialog>
-
                 <p style={{ marginTop: '20px' }}>
                     using an advanced data collection, exchange and
                     analysis platform, with focus on the flora and
@@ -182,41 +179,7 @@ import HistoryTokenList from './search-history-token-list.component';
 
                     <div className='general-search-table'>
                         <SearchResultsPanel />
-
-                        <Button
-                            icon="fa fa-compass"
-                            className='visualize-button'
-                            label='Visualize'
-                            size='small'
-                            onClick={() => {
-                                neighborhoodExplorerStore.nodes =
-                                    neighborhoodExplorerStore.nodes.concat(
-                                        generalSearchStore.selectedEntities.map((x) => {
-                                            return {
-                                                data: {
-                                                    id: x.id,
-                                                    color: x.color,
-                                                    label: x.name,
-                                                },
-                                            };
-                                        }),
-                                    );
-
-                                navigate('/neighborhood-explorer');
-                            }}
-                            tooltip="Show selection in neighborhood explorer"
-                            tooltipOptions={{
-                                position: 'bottom',
-                                showDelay: 1000,
-                            }}
-                        />
-                    </div>)}
-
-
-
-
-
-            </div>
+                    </div>)}            </div>
         </div>
 
     )
