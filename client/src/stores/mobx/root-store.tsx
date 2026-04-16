@@ -3,11 +3,13 @@ import React from "react";
 import { GeneralSearchStore } from "./general-search-store";
 import { dependencyFactory } from "../../features/shared/injection";
 import { SERVICES } from "../../services";
+import { HistorySearchStore } from "./history-search-store";
 
 export const RootStore = types
     .model({
        generalSearchStore: types.optional(GeneralSearchStore,{}),
-      
+       historySearchStore: types.optional(HistorySearchStore,{})
+
       })
     .actions((self) => ({
 

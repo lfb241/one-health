@@ -1,9 +1,10 @@
 import { types, flow, Instance, getEnv, getSnapshot } from "mobx-state-tree";
 import { Entity } from "./models/Entity";
-import React from "react";
+import React, { useContext } from "react";
 import { IGeneralSearchHistoryService, IGeneralSearchService } from "../../services";
 import { MessageService } from "../../features/shared/messages";
-import { SavedTextSearch } from "./models/SavedTextSearch";
+import { RootStoreContext } from "./root-store";
+import { HistorySearchStore } from "./history-search-store";
 
 type Env = {
     historyService: IGeneralSearchHistoryService;
@@ -16,8 +17,8 @@ export const GeneralSearchStore = types.model({
     selectedEntities: types.array(types.reference(Entity)),
     isSearching: types.maybeNull(types.boolean),
     query: types.optional(types.string, ""),
-    history: types.array(SavedTextSearch),
-    isModalOpen: types.optional(types.boolean, false)
+    historySearchStore: types.optional(HistorySearchStore, () => HistorySearchStore.create()),
+
 }).views(
     (self) => ({
         getEntitiesAsJSON() {
@@ -29,22 +30,7 @@ export const GeneralSearchStore = types.model({
         },
         getEntitiesOfType(type: string) {
             return self.entities.filter(e => e.type == type);
-        },
-        getHistorySize() {
-            return self.history.length;
-        },
-        getHistoryAsJSON() {
-            return self.history.map((e) => {
-                return {
-                    id: e.id,
-                    datetime: e.datetime,
-                    query: e.query,
-                    results: e.results
-                }
-            })
-
         }
-
     }))
     .actions(
         (self) => ({
@@ -67,25 +53,9 @@ export const GeneralSearchStore = types.model({
 
             },
 
-            setIsModalOpen(isModalOpen: boolean): void {
-                self.isModalOpen = isModalOpen;
-
-            },
-
-            initHistory: flow(function* () {
-                const { historyService, messageService } = getEnv<Env>(self);
-                const data = yield historyService.getAllAsOptions(messageService);
-                self.history = data;
-
-            }),
-            setHistory(history: Instance<typeof SavedTextSearch>[]): void {
-                self.history.replace(history);
-            },
-
-
             runQuery: flow(function* (): any {
                 const { searchService, messageService, historyService } = getEnv<Env>(self);
-
+        
                 if (!self.isSearching && self.query) {
                     self.isSearching = true
                     const entities = yield searchService.findEntities(
@@ -99,26 +69,14 @@ export const GeneralSearchStore = types.model({
                         { id: '0', query: self.query, datetime: '', results: self.entities },
                         messageService!,)
 
-                    self.history = yield historyService.getAllAsOptions(messageService!)
+                    const history = yield historyService.getAllAsOptions(messageService!)
+                    self.historySearchStore.setHistory(history)
+                    console.log(self.historySearchStore.getHistorySize())
+
                 }
                 self.selectedEntities.clear();
 
-            }),
-            deleteHistoryItem: flow(function* (item: Instance<typeof SavedTextSearch>): any {
-                const { messageService, historyService } = getEnv<Env>(self);
-
-                if (item.id != undefined)
-                    yield historyService.delete(item.id);
-                self.history = (
-                    yield historyService.getAllAsOptions(
-                        messageService!,
-                    ))
-
-
             })
-
-        })
-
-    )
+   }))
 
 export const GeneralSearchStoreContext = React.createContext(GeneralSearchStore.create({}))
