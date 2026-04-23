@@ -1,4 +1,4 @@
-import { types, flow, Instance, getEnv } from "mobx-state-tree";
+import { types, flow, Instance, getEnv, getSnapshot, SnapshotOut } from "mobx-state-tree";
 import React from "react";
 import { IGeneralSearchHistoryService, IGeneralSearchService } from "../../services";
 import { MessageService } from "../../features/shared/messages";
@@ -6,7 +6,7 @@ import { SavedTextSearch } from "./models/SavedTextSearch";
 
 type Env = {
     historyService: IGeneralSearchHistoryService;
-    messageService: MessageService
+    messageService: MessageService;
     searchService: IGeneralSearchService
 }
 
@@ -19,17 +19,10 @@ export const HistorySearchStore = types.model({
         getHistorySize() {
             return self.history.length;
         },
-        getHistoryAsJSON() {
-            return self.history.map((e) => {
-                return {
-                    id: e.id,
-                    datetime: e.datetime,
-                    query: e.query,
-                    results: e.results
-                }
-            })
-
+        getHistoryAsJSON(): SnapshotOut<typeof SavedTextSearch>[] {
+            return self.history.map((item) => getSnapshot(item))
         }
+
 
     }))
     .actions(
@@ -42,7 +35,7 @@ export const HistorySearchStore = types.model({
 
             }),
             setHistory(history: Instance<typeof SavedTextSearch>[]): void {
-                self.history.replace(history);
+                self.history.replace(history)
             },
 
             deleteHistoryItem: flow(function* (item: Instance<typeof SavedTextSearch>): any {

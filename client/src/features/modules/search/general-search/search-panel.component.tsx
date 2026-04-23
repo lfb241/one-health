@@ -77,11 +77,7 @@ const SearchPanel: React.FC = () => {
 
 
     const toast = useRef(null);
-    // TODO: maybe reduntant because usage ob observer in history-related components?
-    useEffect(() => {
-        console.log("History initialized")
-        historySearchStore.initHistory()
-    });
+
 
     return (
 

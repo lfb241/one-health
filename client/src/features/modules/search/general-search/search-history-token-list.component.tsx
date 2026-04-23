@@ -9,10 +9,6 @@ const HistoryTokenList = () => {
     const historySearchStore = useContext(RootStoreContext).historySearchStore;
     const generalSearchStore = useContext(RootStoreContext).generalSearchStore;
 
-    
-    
-
-    if (!historySearchStore.getHistoryAsJSON() || historySearchStore.getHistorySize() === 0) return null;
 
     return (
 

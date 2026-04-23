@@ -7,8 +7,6 @@ import { Column } from "primereact/column";
 import { truncateString } from "../../../../utils";
 import { HistoryItem } from "./models/history-item";
 import { DataView } from 'primereact/dataview';
-import '../../../../Constants.scss';
-
 
 type HistoryModalProps = {
     visible: boolean;
@@ -23,7 +21,7 @@ const HistoryModal = ({ visible, onHide }: HistoryModalProps) => {
 
     const handleReuse = (entry: string) => {
         generalSearchStore.setQuery(entry);
-        onHide?.(); // optional: Modal schließen nach Auswahl
+        onHide?.(); 
     };
 
     const footer = (
@@ -63,7 +61,9 @@ const HistoryModal = ({ visible, onHide }: HistoryModalProps) => {
         })
 
         return (
+
             <div flex-align>{list}</div>
+
         )
 
 

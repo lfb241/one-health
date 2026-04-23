@@ -1,10 +1,9 @@
-import { types, flow, Instance, getEnv, getSnapshot } from "mobx-state-tree";
+import { types, flow, getEnv, getSnapshot, getRoot } from "mobx-state-tree";
 import { Entity } from "./models/Entity";
-import React, { useContext } from "react";
+import React from "react";
 import { IGeneralSearchHistoryService, IGeneralSearchService } from "../../services";
 import { MessageService } from "../../features/shared/messages";
-import { RootStoreContext } from "./root-store";
-import { HistorySearchStore } from "./history-search-store";
+import { RootStoreInstance } from "./models/RootStoreInstance";
 
 type Env = {
     historyService: IGeneralSearchHistoryService;
@@ -17,7 +16,6 @@ export const GeneralSearchStore = types.model({
     selectedEntities: types.array(types.reference(Entity)),
     isSearching: types.maybeNull(types.boolean),
     query: types.optional(types.string, ""),
-    historySearchStore: types.optional(HistorySearchStore, () => HistorySearchStore.create()),
 
 }).views(
     (self) => ({
@@ -56,6 +54,8 @@ export const GeneralSearchStore = types.model({
             runQuery: flow(function* (): any {
                 const { searchService, messageService, historyService } = getEnv<Env>(self);
         
+                const root = getRoot(self) as RootStoreInstance;
+
                 if (!self.isSearching && self.query) {
                     self.isSearching = true
                     const entities = yield searchService.findEntities(
@@ -70,9 +70,9 @@ export const GeneralSearchStore = types.model({
                         messageService!,)
 
                     const history = yield historyService.getAllAsOptions(messageService!)
-                    self.historySearchStore.setHistory(history)
-                    console.log(self.historySearchStore.getHistorySize())
+                    root.historySearchStore.setHistory(history)
 
+                    
                 }
                 self.selectedEntities.clear();
 
