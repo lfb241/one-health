@@ -139,13 +139,7 @@ const SearchPanel: React.FC = () => {
                     <div className="general-search-links">
                         <Toast ref={toast} />
 
-                        <Link to="/" className="general-search-link" onClick={() => {
-                            toast.current.show({ severity: "warn", summary: 'Feature unavailable', detail: 'This feature is currently under development.' })
 
-                        }}
-                        >
-                            <i className="pi pi-angle-down" style={{ fontSize: '1rem' }} ></i>Advanced Search
-                        </Link>
                         <Link to="/search/structure-search" className="general-search-link" >
                             <i className="fa fa-atom" style={{ fontSize: '1rem' }}></i> Compound Search
                         </Link>

@@ -7,6 +7,9 @@ import { Column } from "primereact/column";
 import { truncateString } from "../../../../utils";
 import { HistoryItem } from "./models/history-item";
 import { DataView } from 'primereact/dataview';
+import { DataTable } from "primereact/datatable";
+import { Instance } from "mobx-state-tree";
+import { SavedTextSearch } from "../../../../stores/mobx/models/SavedTextSearch";
 
 type HistoryModalProps = {
     visible: boolean;
@@ -21,7 +24,7 @@ const HistoryModal = ({ visible, onHide }: HistoryModalProps) => {
 
     const handleReuse = (entry: string) => {
         generalSearchStore.setQuery(entry);
-        onHide?.(); 
+        onHide?.();
     };
 
     const footer = (
@@ -35,42 +38,74 @@ const HistoryModal = ({ visible, onHide }: HistoryModalProps) => {
         </div>
     );
 
-    const historyColumnTemplate = (items: HistoryItem[]) => {
-
-        let list = items.map((item) => {
-            return (
-                <div style={{
-                    border: "1px solid grey",
-                    margin: "2px",
-                    display: "flex",
-                    justifyContent: "space-between",
-                    alignItems: "center"
-                }}>                     <span style={{ color: "black", marginLeft: "2px" }}>
+    const historyColumnTemplate = (item: Instance<typeof SavedTextSearch>) => {
+        return (
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+                <div style={{}}>
+                    <span style={{ color: "black", marginLeft: "2px" }}>
                         {truncateString(item.query, 150)}
                     </span >
-
+                </div>
+                <div>
                     <Button
                         style={{ margin: "10px" }}
-                        label="Reuse"
+                        aria-label="Reuse"
                         icon="pi pi-refresh"
                         size="small"
                         onClick={() => handleReuse(item.query)}
+                        tooltip="Reuse"
+                        tooltipOptions={{
+                            position: 'bottom',
+                            showDelay: 1000,
+                        }}
                     />
-                </div >
-            );
-        })
-
-        return (
-
-            <div flex-align>{list}</div>
+                    <Button
+                        style={{ margin: "10px" }}
+                        aria-label="Delete"
+                        severity="danger"
+                        icon="pi pi-times"
+                        size="small"
+                        tooltip="Delete"
+                        tooltipOptions={{
+                            position: 'bottom',
+                            showDelay: 1000,
+                        }}
+                        onClick={() => historySearchStore.deleteHistoryItem(item)}
+                    />
+                </div>
+            </div >
 
         )
 
+    }
 
-    };
+
+
     return (
 
-        <Dialog
+/*         <Dialog
+            header="Search History"
+            visible={visible}
+            onHide={onHide}
+            style={{ width: "40vw", minWidth: "320px" }}
+            modal
+        >
+            <div>
+
+                <DataTable
+                    sortField="name"
+                    sortOrder={1}
+                    value={historySearchStore.getHistoryAsJSON()}
+
+                >
+                    <Column field="query" header="Queries" body={historyColumnTemplate} sortable></Column>
+                </DataTable>
+
+
+
+            </div>
+        </Dialog> */
+         <Dialog
             header="Search History"
             visible={visible}
             onHide={onHide}
@@ -80,20 +115,20 @@ const HistoryModal = ({ visible, onHide }: HistoryModalProps) => {
         >
             <div>
 
-                <DataView
+                <DataTable
                     sortField="name"
                     sortOrder={1}
                     value={historySearchStore.getHistoryAsJSON()}
-                    listTemplate={historyColumnTemplate}
+
                 >
                     <Column field="query" header="Queries" body={historyColumnTemplate} sortable></Column>
-                </DataView>
+                </DataTable>
 
 
 
             </div>
         </Dialog>
     );
-};
 
-export default observer(HistoryModal);
+}
+export default observer(HistoryModal)
