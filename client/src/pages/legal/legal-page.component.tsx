@@ -1,14 +1,13 @@
 import { Accordion, AccordionTab } from 'primereact/accordion';
-import { PageTitle } from '../../components';
-import { toolDisclaimer } from '../../utils';
+import { PageTitle } from '../../shared/components';
 
 import React from 'react';
 
-interface LegalPageProps{
-    activeIndex: number
+interface LegalPageProps {
+    activeIndex: number;
 }
 
-const LegalPageComponent: React.FC<LegalPageProps> = ({activeIndex}) => {
+const LegalPageComponent: React.FC<LegalPageProps> = ({ activeIndex }) => {
     return (
         <div className="page-container-narrow">
             <PageTitle
@@ -708,10 +707,11 @@ const LegalPageComponent: React.FC<LegalPageProps> = ({activeIndex}) => {
                         Phone: 49 3923 751 - 175
                     </p>
                     <p>
-                        <b>Topicality</b><br/>
-                        We have assessed this service in Oct. 2025. Next assessment is due in one year.
+                        <b>Topicality</b>
+                        <br />
+                        We have assessed this service in Oct. 2025. Next
+                        assessment is due in one year.
                     </p>
-
                 </AccordionTab>
             </Accordion>
         </div>

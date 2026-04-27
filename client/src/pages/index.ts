@@ -6,8 +6,8 @@ export { default as MetadataOverviewPageComponent } from './metadata/metadata-ov
 export { default as DataLoadPageComponent } from './metadata/data-load/data-load-page.component';
 
 export { default as NeighborhoodExplorerPageComponent } from './visualization/neighborhood-explorer/neighborhood-explorer-page.component';
-export { default as CoOcurrencesSummaryPageComponent } from './visualization/co-ocurrences-summary/co-ocurrence-summary-page.component';
+export { default as CoOccurrenceSummaryPageComponent } from './visualization/co-occurrences-summary/co-occurrence-summary-page.component';
 
 export { default as DocumentationPageComponent } from './documentation/documentation-page.component';
 export { default as LegalPageComponent } from './legal/legal-page.component';
-export {default as HeroSectionRow} from './home/hero-section-row.component'
+export { default as HeroSectionRow } from './home/hero-section-row.component';

@@ -2,11 +2,10 @@ import React from 'react';
 import { Menubar } from 'primereact/menubar';
 import { MenuItem } from 'primereact/menuitem';
 import { useNavigate, useLocation } from 'react-router-dom';
-import oneHealthLogo from '../assets/logo_n1h.png';
+import oneHealthLogo from '../assets/logo-n1h.png';
 import './header.component.scss';
 
 const Header: React.FC = () => {
-    
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -88,9 +87,9 @@ const Header: React.FC = () => {
         // }
     ];
 
-    const items: MenuItem[] = [...baseItems]
+    const items: MenuItem[] = [...baseItems];
 
-    if (location.pathname !== "/") {
+    if (location.pathname !== '/') {
         items.unshift({
             label: 'General Search',
             icon: 'pi pi-search',
@@ -102,27 +101,30 @@ const Header: React.FC = () => {
         <div
             className="col"
             style={{ display: 'flex', alignItems: 'center', gap: '40px' }}>
-            <a href='/'>
+            <a href="/">
                 <img
                     alt="logo"
                     src={oneHealthLogo}
                     height="40"
                     style={{ marginLeft: 20 }}
-                    className="mr-2" />
+                    className="mr-2"
+                />
             </a>
             <p style={{ fontSize: '16px', color: '#a40', margin: 0 }}>
-                This service is <strong>work in progress</strong>, layout and function are subject to change.
+                This service is <strong>work in progress</strong>, layout and
+                function are subject to change.
             </p>
         </div>
-
-
     );
 
     return (
         <div className="fluid fixed-top">
-            <Menubar model={items} start={start} pt={{ start: { style: { marginRight: 'auto' } } }} />
+            <Menubar
+                model={items}
+                start={start}
+                pt={{ start: { style: { marginRight: 'auto' } } }}
+            />
         </div>
-
     );
 };
 
